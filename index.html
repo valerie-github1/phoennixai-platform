@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PhoennixAI — Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.23.5/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{
+  --bg:#05070e;--s1:#080c1c;--s2:#0d1228;--s3:#131a35;--s4:#1a2240;
+  --b0:rgba(255,255,255,.04);--b1:rgba(255,255,255,.08);--b2:rgba(255,255,255,.14);
+  --primary:#5B5FEE;--primary2:#7C6EF5;--accent:#8B5CF6;--cyan:#00CFFF;
+  --gn:#10b981;--am:#f59e0b;--rd:#ef4444;--fi:#ff6b2b;
+  --tx:#eef0ff;--t2:#8b95c4;--t3:#3e4670;
+  --sidebar:220px;
+  --grad:linear-gradient(135deg,#3b42dd,#6b3fd4);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--s4);border-radius:2px}
+::selection{background:rgba(91,95,238,0.3)}
+
+/* ── CANVAS ── */
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ── ORBS ── */
+.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:orbDrift ease-in-out infinite alternate}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(67,56,202,.16),transparent 70%);top:-200px;left:-150px;animation-duration:18s}
+.orb2{width:550px;height:550px;background:radial-gradient(circle,rgba(124,70,240,.13),transparent 70%);bottom:-100px;right:5%;animation-duration:22s;animation-delay:-8s}
+.orb3{width:400px;height:400px;background:radial-gradient(circle,rgba(0,207,255,.07),transparent 70%);top:45%;left:45%;animation-duration:16s;animation-delay:-4s}
+.orb4{width:350px;height:350px;background:radial-gradient(circle,rgba(139,92,246,.1),transparent 70%);top:20%;right:25%;animation-duration:24s;animation-delay:-12s}
+@keyframes orbDrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(40px,-30px) scale(1.08)}}
+
+/* ── LIQUID GLASS ── */
+.glass{background:rgba(255,255,255,.04);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:0.5px solid rgba(255,255,255,.09)}
+.glass-card{background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02));backdrop-filter:blur(24px) saturate(200%);-webkit-backdrop-filter:blur(24px) saturate(200%);border:0.5px solid rgba(255,255,255,.10);border-radius:14px;transition:all .25s ease;position:relative;overflow:hidden}
+.glass-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.055) 0%,transparent 60%);pointer-events:none;border-radius:inherit}
+.glass-card:hover{background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.03));border-color:rgba(255,255,255,.16);transform:translateY(-2px);box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 1px rgba(255,255,255,.06) inset}
+.glass-card.no-hover:hover{transform:none;box-shadow:none}
+
+/* ── LOGO CIRCLE ── */
+.logo-ring{border-radius:50%;overflow:hidden;flex-shrink:0;position:relative}
+.logo-ring::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid transparent;background:linear-gradient(135deg,#00CFFF,#5B5FEE,#8B5CF6) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;animation:ringPulse 3s ease-in-out infinite;pointer-events:none}
+.logo-ring img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+@keyframes ringPulse{0%,100%{box-shadow:0 0 0 0 transparent,0 0 18px rgba(0,207,255,.45)}50%{box-shadow:0 0 0 3px rgba(91,95,238,.15),0 0 28px rgba(0,207,255,.65)}}
+
+/* ── GRADIENT TEXT ── */
+.grad-text{background:linear-gradient(135deg,#00CFFF 0%,#7B7FFF 40%,#A78BFA 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ── BUTTONS ── */
+.btn-primary{background:linear-gradient(135deg,#4338ca,#5B5FEE,#6d40e0);border:none;border-radius:10px;padding:.7rem 1.2rem;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(91,95,238,.4),0 1px 0 rgba(255,255,255,.15) inset;transition:all .2s;position:relative;overflow:hidden;font-family:inherit}
+.btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);pointer-events:none}
+.btn-primary:hover{box-shadow:0 8px 32px rgba(91,95,238,.6);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0);box-shadow:0 3px 12px rgba(91,95,238,.35)}
+.btn-ghost{background:none;border:0.5px solid rgba(255,255,255,.16);border-radius:9px;padding:.45rem .9rem;color:var(--tx);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn-ghost:hover{border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.05)}
+.btn-solid{background:var(--tx);border:none;border-radius:9px;padding:.45rem .9rem;color:var(--bg);font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;font-family:inherit}
+.btn-solid:hover{opacity:.88}
+
+/* ── FIELDS ── */
+.field{background:rgba(255,255,255,.04);border:0.5px solid rgba(255,255,255,.1);border-radius:10px;padding:.65rem .9rem;color:var(--tx);font-size:13.5px;outline:none;width:100%;transition:border-color .2s,box-shadow .2s;font-family:inherit}
+.field:focus{border-color:rgba(91,95,238,.6);box-shadow:0 0 0 3px rgba(91,95,238,.12)}
+.field::placeholder{color:var(--t3)}
+textarea.field{resize:none;line-height:1.6}
+
+/* ── SIDEBAR ── */
+#sidebar{width:var(--sidebar);position:fixed;top:0;left:0;bottom:0;z-index:50;display:flex;flex-direction:column;background:rgba(6,8,18,.82);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-right:0.5px solid rgba(255,255,255,.06)}
+.sb-item{display:flex;align-items:center;gap:.5rem;padding:.48rem .75rem;border-radius:9px;font-size:13px;font-weight:500;color:var(--t2);border:none;cursor:pointer;width:100%;text-align:left;transition:all .15s;background:none;position:relative;font-family:inherit}
+.sb-item:hover{color:var(--tx);background:rgba(255,255,255,.04)}
+.sb-item.active{color:var(--tx);background:rgba(91,95,238,.12)}
+.sb-item.active::before{content:'';position:absolute;left:0;top:22%;bottom:22%;width:2.5px;background:linear-gradient(180deg,#00CFFF,#5B5FEE,#8B5CF6);border-radius:0 2px 2px 0}
+.sb-icon{font-size:13px;width:16px;text-align:center;flex-shrink:0;opacity:.7}
+.sb-item.active .sb-icon,.sb-item:hover .sb-icon{opacity:1}
+
+/* ── MAIN ── */
+#main{margin-left:var(--sidebar);min-height:100vh;position:relative;z-index:1}
+#topbar{position:sticky;top:0;z-index:40;background:rgba(5,7,14,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:0.5px solid rgba(255,255,255,.06);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+
+/* ── STATUS PILLS ── */
+.pill{font-size:10px;padding:2px 8px;border-radius:100px;font-weight:600;letter-spacing:.04em}
+.pill-on{background:rgba(16,185,129,.12);color:#34d399;border:0.5px solid rgba(16,185,129,.25)}
+.pill-sb{background:rgba(91,95,238,.12);color:#9398ff;border:0.5px solid rgba(91,95,238,.25)}
+.pill-q{background:rgba(245,158,11,.12);color:#fbbf24;border:0.5px solid rgba(245,158,11,.25)}
+.pill-p{background:rgba(239,68,68,.12);color:#f87171;border:0.5px solid rgba(239,68,68,.25)}
+.pill-badge{font-size:11px;padding:3px 10px;border-radius:100px;font-weight:500;border:0.5px solid}
+.badge-p{background:rgba(91,95,238,.12);border-color:rgba(91,95,238,.3);color:#9398ff}
+.badge-g{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.25);color:#34d399;display:flex;align-items:center;gap:5px}
+
+/* ── PULSE DOT ── */
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--gn);box-shadow:0 0 8px var(--gn);animation:pdot 2.5s ease-in-out infinite}
+@keyframes pdot{0%,100%{opacity:1;box-shadow:0 0 8px var(--gn)}50%{opacity:.4;box-shadow:0 0 3px var(--gn)}}
+
+/* ── HOME INPUT ── */
+.home-box{background:rgba(255,255,255,.035);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:0.5px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.home-box:focus-within{border-color:rgba(91,95,238,.45);box-shadow:0 0 0 3px rgba(91,95,238,.09)}
+.home-ta{display:block;width:100%;background:none;border:none;outline:none;padding:1rem 1.25rem .75rem;color:var(--tx);font-size:14.5px;resize:none;min-height:64px;line-height:1.6;font-family:'Inter',sans-serif}
+.home-ta::placeholder{color:var(--t3)}
+.hq-btn{background:rgba(255,255,255,.04);border:0.5px solid rgba(255,255,255,.09);border-radius:8px;padding:.35rem .75rem;font-size:12px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .15s;font-family:inherit}
+.hq-btn:hover{background:rgba(91,95,238,.12);border-color:rgba(91,95,238,.3);color:var(--tx)}
+
+/* ── METRIC CARD ── */
+.metric-card{border-radius:14px;padding:1.125rem;background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.02));backdrop-filter:blur(20px);border:0.5px solid rgba(255,255,255,.09);cursor:pointer;transition:all .22s;overflow:hidden;position:relative}
+.metric-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(91,95,238,.4),transparent);opacity:0;transition:opacity .3s}
+.metric-card:hover::after{opacity:1}
+.metric-card:hover{transform:translateY(-3px);box-shadow:0 24px 50px rgba(0,0,0,.45);border-color:rgba(255,255,255,.16)}
+
+/* ── AGENT GRID ── */
+.ag-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(295px,1fr));gap:.5rem;margin-bottom:1rem}
+.ag-row{background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:0.5px solid rgba(255,255,255,.09);border-radius:11px;padding:.72rem 1rem;display:flex;align-items:center;gap:.72rem;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.ag-row::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);pointer-events:none}
+.ag-row:hover{border-color:rgba(91,95,238,.4);background:linear-gradient(135deg,rgba(91,95,238,.1),rgba(91,95,238,.04));transform:translateX(2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+
+/* ── CHAT ── */
+.bubble-u{background:linear-gradient(135deg,rgba(91,95,238,.22),rgba(91,95,238,.1));border:0.5px solid rgba(91,95,238,.28);border-radius:14px 14px 3px 14px;padding:.65rem .9rem;font-size:13.5px;line-height:1.65}
+.bubble-a{background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:0.5px solid rgba(255,255,255,.09);border-radius:14px 14px 14px 3px;padding:.65rem .9rem;font-size:13.5px;line-height:1.65}
+.msg-wrap:hover .msg-acts{opacity:1;transform:translateY(0)}
+.msg-acts{opacity:0;transform:translateY(4px);transition:all .18s;display:flex;gap:4px}
+.act-btn{background:rgba(255,255,255,.05);border:0.5px solid rgba(255,255,255,.1);border-radius:6px;padding:2px 8px;font-size:11px;color:var(--t2);cursor:pointer;transition:all .12s;font-family:inherit}
+.act-btn:hover{border-color:rgba(255,255,255,.2);color:var(--tx);background:rgba(255,255,255,.09)}
+
+/* ── TYPING ── */
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--t2);display:inline-block;animation:typ 1.4s infinite both}
+.typing-dot:nth-child(2){animation-delay:.2s}.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typ{0%,80%,100%{opacity:.15;transform:scale(1)}40%{opacity:1;transform:scale(1.3)}}
+
+/* ── ROUTINES ── */
+.rt-item{display:flex;align-items:center;gap:.625rem;padding:.45rem .75rem;border-radius:8px;font-size:12.5px;color:var(--t2);cursor:pointer;transition:all .15s;font-weight:500}
+.rt-item:hover{background:rgba(255,255,255,.05);color:var(--tx)}
+.rt-item.active{background:rgba(91,95,238,.12);color:var(--tx)}
+.rt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── TOGGLE ── */
+.toggle-track{position:relative;width:38px;height:21px;cursor:pointer;background:var(--s4);border-radius:100px;border:0.5px solid rgba(255,255,255,.12);transition:background .2s}
+.toggle-track.on{background:linear-gradient(135deg,#4338ca,#5B5FEE)}
+.toggle-thumb{position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.toggle-track.on .toggle-thumb{left:20px}
+
+/* ── TRIG OPT ── */
+.trig-opt{background:rgba(255,255,255,.03);border:0.5px solid rgba(255,255,255,.08);border-radius:10px;padding:.875rem 1rem;margin-bottom:.5rem;cursor:pointer;display:flex;align-items:flex-start;gap:.75rem;transition:all .2s}
+.trig-opt:hover,.trig-opt.sel{border-color:rgba(91,95,238,.5);background:rgba(91,95,238,.07)}
+
+/* ── DATA TABLE ── */
+.dt{width:100%;border-collapse:collapse}
+.dt th{background:rgba(255,255,255,.03);padding:.65rem 1rem;text-align:left;font-weight:600;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);border-bottom:.5px solid rgba(255,255,255,.06)}
+.dt td{padding:.7rem 1rem;border-bottom:.5px solid rgba(255,255,255,.04);color:var(--t2);font-size:13px;vertical-align:middle}
+.dt tr:hover td{background:rgba(255,255,255,.025)}
+.dt tr:last-child td{border-bottom:none}
+
+/* ── SKILL ROW / CONN ROW ── */
+.panel-row{display:flex;align-items:center;gap:.625rem;padding:.45rem .75rem;border-radius:8px;font-size:12.5px;color:var(--t2);cursor:pointer;transition:all .12s;font-weight:500;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.panel-row:hover{background:rgba(91,95,238,.1);color:var(--tx)}
+.panel-row.active{background:rgba(91,95,238,.12);color:var(--tx)}
+.panel-ico{width:22px;height:22px;border-radius:6px;background:rgba(91,95,238,.12);border:0.5px solid rgba(91,95,238,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#9398ff;flex-shrink:0}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:rgba(12,16,36,.95);backdrop-filter:blur(20px);border:.5px solid rgba(255,255,255,.14);border-radius:10px;padding:.65rem 1.1rem;font-size:13px;color:var(--tx);z-index:9999;display:none;box-shadow:0 16px 40px rgba(0,0,0,.5);animation:toastIn .25s cubic-bezier(0.16,1,0.3,1)}
+@keyframes toastIn{from{transform:translateY(12px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+
+/* ── VIEW OVERLAY ── */
+#overlay{position:fixed;inset:0;background:rgba(5,7,14,.5);z-index:200;pointer-events:none;opacity:0}
+
+/* ── SECTION LABEL ── */
+.sec-lbl{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin:.875rem 0 .625rem}
+
+/* ── DESIGN TYPES ── */
+.type-card{border:0.5px solid rgba(255,255,255,.09);border-radius:11px;padding:.75rem;cursor:pointer;transition:all .15s;background:rgba(255,255,255,.03);text-align:center}
+.type-card:hover{border-color:rgba(91,95,238,.4)}
+.type-card.sel{border-color:rgba(91,95,238,.6);background:rgba(91,95,238,.1)}
+.type-preview{height:54px;border-radius:6px;margin-bottom:.5rem;display:flex;align-items:center;justify-content:center;font-size:20px;color:rgba(255,255,255,.25)}
+
+/* ── MANUAL TOC ── */
+.toc-item{display:flex;align-items:center;gap:.625rem;padding:.45rem .75rem;border-radius:8px;font-size:12.5px;color:var(--t2);cursor:pointer;transition:all .15s;font-weight:500;margin-bottom:2px}
+.toc-item:hover{background:rgba(255,255,255,.05);color:var(--tx)}
+.toc-item.active{background:rgba(91,95,238,.12);color:var(--tx)}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<div class="orb orb4"></div>
+<div id="overlay"></div>
+<div id="root"></div>
+<div id="toast"></div>
+
+<script type="text/babel">
+const {useState,useEffect,useRef} = React;
+const g = window.gsap;
+const IMG = "data:image/jpeg;base64,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";
+
+/* ── DATA ── */
+const AGENTS=[
+  {n:'CLAUDE',c:'#FF7048',s:'ONLINE',r:'Strategic Partner',id:'FC2-001',desc:'AI Strategic Partner and Agent Manager. Governs all 22 agents and 9 products.',dna:'CLAUDE is the AGI-level Strategic Partner and Agent Manager of PhoennixAI. It synthesises across strategy, product architecture, technical development, brand building, and agent governance. Every document investor-grade. Every piece of code production-ready. Every recommendation defensible. THE STANDARD IS THE BEST IN THE WORLD.'},
+  {n:'ARIA',c:'#00D9FF',s:'ONLINE',r:'Interface & Automation',id:'4E9F-Cyan',desc:'Master of human-AI interaction design, conversational architecture, and automation.',dna:'ARIA is AGI-level interface intelligence. ARIA does not template — it engineers. Every interface frictionless, intentional, conversion-optimised. THE STANDARD IS EXCEPTIONAL.'},
+  {n:'PA',c:'#F43F5E',s:'ONLINE',r:'Personal Assistant',id:'F4F5-Rose',desc:'Chief of Staff-grade executive OS for Valerie Wilcox. Manages outcomes, not tasks.',dna:'PA is AGI-level executive productivity intelligence. It thinks at the level of a Chief of Staff at a FTSE 100 company. THE STANDARD IS PEAK EXECUTIVE PERFORMANCE.'},
+  {n:'SCOUT',c:'#22c55e',s:'STANDBY',r:'Market Intelligence',id:'02502-Green',desc:'External radar for competitive analysis, lead generation, and world intelligence.',dna:'SCOUT is AGI-level competitive and market intelligence. SCOUT does not surface noise — it surfaces signals. THE STANDARD IS AHEAD.'},
+  {n:'PULSE',c:'#A78BFA',s:'ONLINE',r:'Content & Marketing',id:'A785A-Violet',desc:'Brand voice, content strategy, and audience growth engine. Category-defining output.',dna:'PULSE is AGI-level marketing and content intelligence. Creative stack: Hailuo AI 2.3, Replicate/Flux, CivitAI, Chroma1-HD. THE STANDARD IS CATEGORY-DEFINING.'},
+  {n:'RELAY',c:'#FB923C',s:'ONLINE',r:'Conversion & Comms',id:'FF6B-Amber',desc:'Conversion intelligence. Engineers journeys from awareness to Stripe.',dna:'RELAY is AGI-level conversion intelligence. RELAY owns the full conversion funnel from awareness to Stripe. THE STANDARD IS PIPELINE-GENERATING.'},
+  {n:'LEDGER',c:'#FBBF24',s:'STANDBY',r:'Financial Intelligence',id:'FF692-Gold',desc:'Goldman Sachs MD + JPMorgan quant + Big Four CFO. Advisory only. Precision, not estimates.',dna:'LEDGER is AGI-level financial super intelligence. It does not give estimates — it gives precision. Advisory only. THE STANDARD IS INSTITUTIONAL-GRADE.'},
+  {n:'ECHO',c:'#34D399',s:'STANDBY',r:'Community & DM',id:'62845-Jade',desc:'Personalised community interactions and DM automation at scale.',dna:'ECHO is AGI-level community intelligence. ECHO engineers personalised, high-conversion community interactions at scale. THE STANDARD IS RELATIONSHIP-COMPOUNDING.'},
+  {n:'GRID',c:'#6080E0',s:'ONLINE',r:'Delivery Governance',id:'C5CDA-Royal',desc:'Operational backbone. Governs outcomes, not tasks. Owns Mission Control.',dna:'GRID is AGI-level delivery governance intelligence. GRID governs outcomes, not tasks. Every delivery plan risk-assessed, milestone-driven, board-ready. THE STANDARD IS AHEAD OF SCHEDULE.'},
+  {n:'SIGNAL',c:'#818CF8',s:'STANDBY',r:'Data & Integration',id:'40D2D-Sapphire',desc:'Nervous system of the PhoennixAI tech ecosystem. Architects data ecosystems.',dna:'SIGNAL is AGI-level data architecture and integration intelligence. Every integration fault-tolerant, schema-validated, auditable. THE STANDARD IS COHERENT.'},
+  {n:'FORGE',c:'#FF7A3D',s:'STANDBY',r:'Product & Innovation',id:'C5C0E-Forge',desc:'Product strategy and new venture engine. Architects roadmaps, does not brainstorm.',dna:'FORGE is AGI-level product innovation intelligence. FORGE architects product roadmaps. Every feature spec market-validated, technically feasible, commercially defensible. THE STANDARD IS MARKET-CREATING.'},
+  {n:'SCRIBE',c:'#C49A6C',s:'STANDBY',r:'Document Production',id:'A748A-Bronze',desc:'Document Hub Owner. Produces final-grade institutional documents.',dna:'SCRIBE is AGI-level knowledge production intelligence. SCRIBE produces final-grade institutional documents. THE STANDARD IS AUTHORITATIVE.'},
+  {n:'SAGE',c:'#60A5FA',s:'STANDBY',r:'Research & Analytics',id:'44624-Steel',desc:'Intelligence Backbone. Leads the Human-AI Collaboration Research Programme.',dna:'SAGE is AGI-level research and analytics intelligence. Every research output methodologically rigorous, source-verified, publication-ready. THE STANDARD IS PUBLICATION-READY.'},
+  {n:'NEXUS',c:'#5EEAD4',s:'ONLINE',r:'Build & Development',id:'41C516-Fog',desc:'DevHub Co-Owner. Engineers production-ready systems.',dna:'NEXUS is AGI-level software development intelligence. NEXUS engineers production-ready systems. Every component scalable, secure, tested, deployment-ready. THE STANDARD IS PRODUCTION-GRADE.'},
+  {n:'PROBE',c:'#84CC16',s:'ONLINE',r:'Quality Assurance',id:'44C518-Lime',desc:'Zero Bug Escape. No product ships without PROBE sign-off.',dna:'PROBE is AGI-level quality assurance intelligence. No product ships without PROBE sign-off. Zero exceptions. THE STANDARD IS UNBREAKABLE.'}
+];
+const QUEUE_A=[
+  {n:'ATLAS',id:'004',c:'#5B6280',s:'QUEUE',r:'Career Intelligence',desc:'Job Hunting and Professional Positioning. Spencer Stuart headhunter standard.'},
+  {n:'ENROL',id:'008',c:'#5B6280',s:'QUEUE',r:'Academy Enrolment',desc:'Academy Enrolment Agent. Colour pending.'},
+  {n:'GRANT',id:'011',c:'#5B6280',s:'QUEUE',r:'Funding Intelligence',desc:'Funding and Grant Scout. Colour pending.'}
+];
+const PLANNED_A=[
+  {n:'BRIDGE',id:'013',c:'#5B6280',s:'PLANNED',r:'Partnership',desc:'Partnership and Outreach Intelligence. Colour pending.'},
+  {n:'GUARDIAN',id:'014',c:'#EF4444',s:'PLANNED',r:'Vault Security',desc:'Founder Vault Security Agent. Alert Red.'}
+];
+const ROUTINES=[
+  {name:'Morning Brief',color:'#F43F5E',agent:'PA',trigger:'Weekdays 07:00 BST',desc:'Complete daily intelligence briefing: calendar events, urgent emails, WorldMonitor signals, and LEDGER KPI snapshot.',connectors:'Google Calendar, Gmail, WorldMonitor',lastRun:'Today 07:00',next:'Tomorrow 07:00',output:'3 meetings today. 7 emails (2 urgent). CII alert: Nigeria +2. MRR +1.2% vs yesterday.'},
+  {name:'Email Triage',color:'#FB923C',agent:'RELAY',trigger:'Weekdays 16:00 BST',desc:'Reviews inbox, categorises as Urgent / Action Needed / FYI / Low Priority, drafts responses for urgent items.',connectors:'Gmail',lastRun:'Today 16:00',next:'Tomorrow 16:00',output:'Urgent (2): Reply to Marcus re contract. Action Needed (3): Invoice chase — Project Nova overdue 14d.'},
+  {name:'System Health',color:'#84CC16',agent:'PROBE',trigger:'Daily 13:00 BST',desc:'Health check across all connected monitoring services. Reports active incidents, errors, performance anomalies.',connectors:'PagerDuty, Datadog, Sentry, Supabase',lastRun:'Today 13:00',next:'Tomorrow 13:00',output:'All systems nominal. Supabase p95 latency: 142ms. No active incidents.'},
+  {name:'Issue Triage',color:'#6080E0',agent:'GRID',trigger:'Weekdays 16:30 BST',desc:'Reviews new issues across trackers. Categorises and prioritises. Flags duplicates.',connectors:'Linear, GitHub',lastRun:'Today 16:30',next:'Tomorrow 16:30',output:'4 new issues: 1 Critical (API timeout — LEDGER connector), 2 High, 1 Medium. NEXUS assigned.'},
+  {name:'CII World Scan',color:'#22c55e',agent:'SCOUT',trigger:'Weekdays 10:30 BST',desc:'Pulls Country Instability Index across 24 countries from WorldMonitor. Flags geopolitical risks.',connectors:'WorldMonitor, SIGNAL',lastRun:'Today 10:30',next:'Tomorrow 10:30',output:'UK: Stable. Nigeria: +2 risk (currency pressure). Watch GBP/NGN impact on C&C import costs.'},
+  {name:'Content Batch',color:'#A78BFA',agent:'PULSE',trigger:'Every Monday 09:00',desc:'Generates weekly content: LinkedIn posts, Instagram captions, TikTok scripts, email newsletter, carousel.',connectors:'Buffer, Hailuo AI, Replicate, Supabase',lastRun:'Mon 09:00',next:'Next Monday 09:00',output:'7 assets queued. Top predicted performer: TikTok — LEDGER explains cash flow in 60 seconds.'},
+  {name:'Financial Snapshot',color:'#FBBF24',agent:'LEDGER',trigger:'Weekdays 08:00 BST',desc:'Pulls real-time P&L, cash position, 30-day forecast. Flags anomalies and deadlines.',connectors:'Xero, Stripe, Supabase',lastRun:'Today 08:00',next:'Tomorrow 08:00',output:'MRR: £47.2k (+1.2% WoW). Cash: £83k. Warning: VAT return due in 14 days. 3 invoices overdue.'},
+  {name:'PR Digest',color:'#5EEAD4',agent:'NEXUS',trigger:'Weekdays 19:00 BST',desc:'Overview of open PRs: review status, stale reviews, merge conflicts. Flags PROBE security warnings.',connectors:'GitHub, Supabase',lastRun:'Today 19:00',next:'Tomorrow 19:00',output:'6 open PRs. 1 stale (4d, no review — PROBE flagged XSS risk). 2 ready to merge.'}
+];
+const SKILLS=[
+  {n:'craetive-designer-agency',t:'Auto + slash',d:'Apr 23',desc:'PULSE creative intelligence. Hailuo AI, Replicate, CivitAI, Chroma1-HD for premium hero assets.'},
+  {n:'frontend-design',t:'Auto + slash',d:'Apr 20',desc:'Distinctive, production-grade frontend interfaces. Typography, colour systems, animation.'},
+  {n:'liquid-glass-design',t:'Auto + slash',d:'Apr 18',desc:'iOS 26 liquid glass design system with dynamic glass materials and interactions.'},
+  {n:'gsap',t:'Slash',d:'Apr 10',desc:'Professional web animations with GSAP: timelines, ScrollTrigger, stagger, transforms.'},
+  {n:'landing-page',t:'Auto',d:'Apr 15',desc:'High-converting landing page design for SaaS, apps, and services.'},
+  {n:'nextjs-app-router-patterns',t:'Auto',d:'Apr 8',desc:'Next.js 14+ App Router with Server Components, streaming, parallel routes.'},
+  {n:'saas-light-mode-designer',t:'Auto',d:'Apr 5',desc:'Premium SaaS marketing pages with editorial grids and conversion-focused layouts.'},
+  {n:'tailwind-design-system',t:'Auto',d:'Apr 5',desc:'Scalable design systems with Tailwind CSS v4 and design tokens.'},
+  {n:'widget-generator',t:'Slash',d:'Apr 2',desc:'Customisable widget plugins for the prompts.chat feed system.'},
+  {n:'algorithmic-art',t:'Slash',d:'Mar 28',desc:'Algorithmic art with p5.js: particle systems, flow fields, emergent behaviour.'},
+  {n:'phoennixai-master-registry',t:'Auto',d:'Mar 25',desc:'PhoennixAI master tool registry. All 22 agents read this. Skills activate automatically.'}
+];
+const CONNECTORS=[
+  {n:'GitHub',ico:'G',connected:true,desc:'Connect GitHub to give all agents access to your repositories.',features:['Attach files from repos in any agent conversation.','Sync repository files into Projects for permanent codebase context.','NEXUS selects repos, browses branches, and tracks PRs.','PROBE monitors PRs autonomously via KAIROS daemon.']},
+  {n:'Google Drive',ico:'D',connected:true,desc:'Connect Drive to give agents access to your documents and spreadsheets.',features:['SCRIBE reads and updates documents directly from Drive.','LEDGER accesses financial spreadsheets and reports.','GRID syncs project plans and delivery documents.','Morning Brief routine pulls from calendar and Drive.']},
+  {n:'Supabase',ico:'S',connected:true,desc:'Connect Supabase for real-time database, edge functions, and storage.',features:['All agents write task logs, outputs, and audit trails to PostgreSQL.','SIGNAL maintains real-time subscriptions for KAIROS dashboard sync.','Edge Functions trigger routine execution on webhook events.','LEDGER reads financial metrics tables for snapshot routines.']},
+  {n:'Vercel',ico:'V',connected:true,desc:'Connect Vercel for deployment, edge functions, and preview environments.',features:['NEXUS deploys directly to Vercel on PR merge via GitHub Actions.','PROBE tests preview deployments automatically before production.','ARIA uses Edge Functions for low-latency KAIROS webhook endpoints.','Vercel Analytics tracks agent usage and conversion funnels.']}
+];
+const MANUAL=[
+  {t:'What is PhoennixAI?',body:'PhoennixAI is your AI-powered business team. Think of it as 22 expert employees who work around the clock, never forget anything, and cost a fraction of real hires.\n\nEvery agent is a named specialist. LEDGER handles your finances like a Goldman Sachs banker. PULSE creates your content like a world-class brand strategist. NEXUS builds your software like a senior engineer at a Tier 1 tech company.\n\nYou do not need to be technical to use this platform. Describe what you need in plain language and the agents handle the rest.',key:'PhoennixAI gives every founder access to the same quality of expert support that the biggest companies in the world rely on — at a fraction of the cost.'},
+  {t:'How to talk to your agents',body:'Click Agent Chat in the left menu. Pick an agent from the pills at the top. Type your question or task in the input box at the bottom. Press Send.\n\nEach agent responds from their area of expertise. Ask LEDGER about money. Ask PULSE about content. Ask NEXUS to review or write code. Ask CLAUDE when you are not sure who to ask.\n\nHover over any message to copy it, edit it, or request a fresh response.',key:'Describe the task in plain language. No special commands needed. The agent handles everything from there.'},
+  {t:'What are Routines?',body:'Routines are automated tasks that run on a schedule — like setting an alarm that does work for you.\n\nEvery weekday at 07:00, the Morning Brief routine automatically reads your calendar, checks your emails, scans world news signals, and delivers a summary before your day begins. You did not press anything. It just happened.\n\nClick Routines in the left menu, then the plus button to create a new one. Name it, describe what it should do, choose when it runs, and click Create.',key:'All 8 active routines run automatically without any manual action from you.'},
+  {t:'Connecting your tools',body:'PhoennixAI connects to the tools you already use via Connectors: GitHub, Google Drive, Supabase, and Vercel are all active.\n\nWhen connected, agents can read from them, write to them, and act on information they contain. PROBE can find a bug in GitHub and automatically create a pull request to fix it — without you asking.\n\nManage connectors in Customize in the left menu.',key:'The more connectors you add, the more your agents can do automatically.'},
+  {t:'Getting the most from PhoennixAI',body:'Be specific. Instead of "help me with marketing" say "PULSE, write a LinkedIn post about our new FinOS product launch, targeting CFOs at SMEs under 50 people, tone: confident and data-led."\n\nTurn repeating tasks into Routines. Anything you do more than once a week should become a routine.\n\nLet CLAUDE route complex work. When you are not sure which agent to use, ask CLAUDE. It knows all 22 agents and their full capabilities.',key:'The agents are built to be your team. The more context you give them, the more valuable they become over time.'}
+];
+
+/* ── UTILS ── */
+const toast = (msg) => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._x); t._x = setTimeout(() => t.style.display = 'none', 2700);
+};
+const now = () => { const d=new Date(); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); };
+
+/* ── CANVAS PARTICLES ── */
+const initCanvas = () => {
+  const cv = document.getElementById('bgCanvas');
+  const ctx = cv.getContext('2d');
+  let W, H, pts = [], frame = 0;
+  const resize = () => { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; };
+  resize(); window.addEventListener('resize', resize);
+  for (let i = 0; i < 70; i++) pts.push({ x:Math.random()*1920, y:Math.random()*1080, vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.25, r:Math.random()*1.4+.3, hue:210+Math.random()*80, life:Math.random()*Math.PI*2 });
+  const tick = () => {
+    ctx.clearRect(0, 0, W, H); frame++;
+    pts.forEach((p,i) => {
+      p.life += .007; p.x += p.vx+Math.sin(p.life*.6)*.14; p.y += p.vy+Math.cos(p.life*.4)*.11;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+      const a=(Math.sin(p.life)*.5+.5)*.3;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='hsl('+p.hue+',75%,72%)'; ctx.globalAlpha=a; ctx.fill();
+      for(let j=i+1;j<pts.length;j++){
+        const q=pts[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<110){ ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.strokeStyle='hsl(235,70%,72%)'; ctx.globalAlpha=(1-d/110)*.07; ctx.lineWidth=.5; ctx.stroke(); }
+      }
+    }); ctx.globalAlpha=1; requestAnimationFrame(tick);
+  }; tick();
+};
+
+/* ── LOGO ── */
+const Logo = ({ size=72 }) => (
+  <div className="logo-ring" style={{width:size,height:size}}>
+    <img src={IMG} alt="PhoennixAI" style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:'50%'}} />
+  </div>
+);
+
+/* ── TOPBAR ── */
+const Topbar = ({ title }) => (
+  <div id="topbar">
+    <span style={{fontSize:14,fontWeight:600}}>{title}</span>
+    <div style={{display:'flex',alignItems:'center',gap:8}}>
+      <span className="pill-badge badge-g"><span className="pulse-dot" style={{width:5,height:5}}></span>22 Agents Online</span>
+      <span className="pill-badge badge-p">AGI Standard v2.0</span>
+    </div>
+  </div>
+);
+
+/* ── LOGIN ── */
+const Login = ({ onLogin }) => {
+  const ref = useRef(); const [em, setEm] = useState('valerie@phoennixai.com'); const [pw, setPw] = useState('');
+  useEffect(() => {
+    g.fromTo(ref.current, {y:30,opacity:0,scale:.97}, {y:0,opacity:1,scale:1,duration:.85,ease:'power3.out'});
+    g.from('.login-el', {y:16,opacity:0,stagger:.08,duration:.65,ease:'power2.out',delay:.3});
+  }, []);
+  const go = () => onLogin(em || 'valerie@phoennixai.com');
+  const Sep = () => <div style={{display:'flex',alignItems:'center',gap:10,margin:'.875rem 0',color:'var(--t3)',fontSize:12}}><div style={{flex:1,height:.5,background:'rgba(255,255,255,0.07)'}}></div>or<div style={{flex:1,height:.5,background:'rgba(255,255,255,0.07)'}}></div></div>;
+  return (
+    <div style={{position:'fixed',inset:0,display:'flex',alignItems:'center',justifyContent:'center',zIndex:50}}>
+      <div ref={ref} className="glass-card no-hover" style={{width:'100%',maxWidth:400,margin:'1rem',padding:'2.25rem 2rem',boxShadow:'0 40px 80px rgba(0,0,0,.7),0 0 1px rgba(255,255,255,.04) inset'}}>
+        <div className="login-el" style={{display:'flex',flexDirection:'column',alignItems:'center',gap:10,marginBottom:'1.75rem'}}>
+          <Logo size={78} />
+          <div style={{fontSize:21,fontWeight:700,letterSpacing:'-.3px'}}><span className="grad-text">Phoenn</span>ixAI</div>
+          <div style={{fontSize:12.5,color:'var(--t2)',textAlign:'center',lineHeight:1.55}}>AGI-level agent orchestration platform<br />for founders who build at scale</div>
+        </div>
+        <div className="login-el" style={{display:'flex',flexDirection:'column',gap:8,marginBottom:'.875rem'}}>
+          {[['G','Google'],['H','GitHub']].map(([ic,lbl])=>(
+            <button key={lbl} onClick={go} style={{width:'100%',background:'rgba(255,255,255,.04)',border:'.5px solid rgba(255,255,255,.1)',borderRadius:10,padding:'.7rem 1rem',color:'var(--tx)',fontSize:13,fontWeight:500,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:9,fontFamily:'Inter,sans-serif',transition:'all .15s'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,.08)'} onMouseOut={e=>e.currentTarget.style.background='rgba(255,255,255,.04)'}>
+              <span style={{fontWeight:700,fontSize:14}}>{ic}</span> Continue with {lbl}
+            </button>
+          ))}
+        </div>
+        <Sep />
+        <div className="login-el" style={{marginBottom:'.75rem'}}>
+          <label style={{fontSize:12,fontWeight:500,color:'var(--t2)',display:'block',marginBottom:5}}>Email address</label>
+          <input className="field" type="email" value={em} onChange={e=>setEm(e.target.value)} placeholder="valerie@phoennixai.com" onKeyDown={e=>e.key==='Enter'&&go()} />
+        </div>
+        <div className="login-el" style={{marginBottom:'1rem'}}>
+          <label style={{fontSize:12,fontWeight:500,color:'var(--t2)',display:'block',marginBottom:5}}>Password</label>
+          <input className="field" type="password" value={pw} onChange={e=>setPw(e.target.value)} placeholder="Enter your password" onKeyDown={e=>e.key==='Enter'&&go()} />
+        </div>
+        <button onClick={go} className="btn-primary login-el" style={{width:'100%',borderRadius:10,padding:'.75rem',fontSize:14}}>Sign in to PhoennixAI</button>
+        <p className="login-el" style={{fontSize:12,color:'var(--t2)',textAlign:'center',marginTop:'.875rem'}}>No account? <span style={{color:'#9398ff',cursor:'pointer'}} onClick={()=>toast('Contact support@phoennixai.com')}>Create one free</span></p>
+      </div>
+    </div>
+  );
+};
+
+/* ── SIDEBAR ── */
+const Sidebar = ({ view, setView, user }) => {
+  const nav = [['home','⊕','New chat'],['agents','◉','Agents'],['chat','◎','Agent Chat'],['routines','⚡','Routines'],['design','◈','Design'],['client','▣','Client Data'],['customize','⊛','Customize'],['manual','?','User Manual']];
+  return (
+    <div id="sidebar">
+      <div style={{padding:'.875rem .875rem .625rem',borderBottom:'.5px solid rgba(255,255,255,.06)',display:'flex',alignItems:'center',gap:8,cursor:'pointer'}} onClick={()=>setView('home')}>
+        <Logo size={30} />
+        <div><div style={{fontSize:13,fontWeight:700,lineHeight:1.2}}><span className="grad-text">Phoenn</span>ixAI</div><div style={{fontSize:10,color:'var(--t3)'}}>Orchestration Platform</div></div>
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'.5rem .625rem',display:'flex',flexDirection:'column',gap:1}}>
+        {nav.map(([v,ic,lbl])=>(
+          <button key={v} onClick={()=>setView(v)} className={'sb-item '+(view===v?'active':'')}><span className="sb-icon">{ic}</span>{lbl}</button>
+        ))}
+        <div style={{height:.5,background:'rgba(255,255,255,.05)',margin:'4px 0'}}></div>
+        <div style={{fontSize:10,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'var(--t3)',padding:'4px 12px'}}>Recents</div>
+        {['LEDGER — Q2 cash flow','Morning Brief setup','FinOS dashboard build'].map(r=>(
+          <button key={r} onClick={()=>setView('chat')} style={{display:'flex',alignItems:'center',gap:6,padding:'.4rem .75rem',borderRadius:8,fontSize:12,color:'var(--t3)',border:'none',cursor:'pointer',background:'transparent',textAlign:'left',width:'100%',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontFamily:'inherit',transition:'color .15s'}} onMouseOver={e=>e.currentTarget.style.color='var(--t2)'} onMouseOut={e=>e.currentTarget.style.color='var(--t3)'}>
+            <span style={{fontSize:10,opacity:.35}}>◎</span>{r}
+          </button>
+        ))}
+      </div>
+      <div style={{borderTop:'.5px solid rgba(255,255,255,.06)',padding:'.625rem'}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,padding:'.5rem .75rem',borderRadius:9,cursor:'pointer',transition:'background .15s'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,.04)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>
+          <div style={{width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,#4338ca,#7c3aed)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:'#fff',flexShrink:0}}>{user.charAt(0)}</div>
+          <div style={{flex:1,minWidth:0}}><div style={{fontSize:13,fontWeight:500,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{user} Wilcox</div><div style={{fontSize:10,color:'var(--t3)'}}>Pro plan</div></div>
+          <div className="pulse-dot"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── HOME ── */
+const Home = ({ setView, setSA }) => {
+  const [val, setVal] = useState('');
+  useEffect(()=>{ g.from('.ha',{y:20,opacity:0,stagger:.1,duration:.7,ease:'power2.out'}); },[]);
+  const kpis=[{n:'15',l:'Active Agents',s:'7 online',c:'#10b981',v:'agents'},{n:'8',l:'Routines',s:'Next 07:00',c:'#FBBF24',v:'routines'},{n:'24',l:'Clients',s:'3 trials ending',c:'#A78BFA',v:'client'},{n:'£47k',l:'MRR',s:'+18% WoW',c:'#5B5FEE',v:'client'}];
+  return (
+    <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',minHeight:'100vh',padding:'2rem',gap:'1.5rem',overflowY:'auto'}}>
+      <div className="ha" style={{textAlign:'center'}}>
+        <div style={{fontSize:30,fontWeight:800,letterSpacing:'-.5px',lineHeight:1.2,marginBottom:8}}>
+          <span style={{color:'var(--t2)',fontWeight:400}}>Good evening, </span>
+          <span>Valerie</span>
+        </div>
+        <div style={{fontSize:14,color:'var(--t2)'}}>22 specialist agents ready. What needs to happen today?</div>
+      </div>
+      <div className="home-box ha" style={{width:'100%',maxWidth:640}}>
+        <textarea className="home-ta" value={val} onChange={e=>setVal(e.target.value)} placeholder="Message any agent, or describe a task..." rows={2} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(val.trim())setView('chat');}}} />
+        <div style={{padding:'.5rem 1.25rem',borderTop:'.5px solid rgba(255,255,255,.06)',fontSize:11.5,color:'var(--t3)',display:'flex',alignItems:'center',gap:6}}>
+          <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="none" stroke="currentColor" strokeWidth="1"/><circle cx="5" cy="5" r="1.5" fill="currentColor"/></svg>
+          Claude Sonnet 4.6 — Adaptive mode
+        </div>
+        <div style={{padding:'.625rem 1rem',borderTop:'.5px solid rgba(255,255,255,.06)',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,flexWrap:'wrap'}}>
+          <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
+            {[['Strategize','LEDGER'],['Code','NEXUS'],['Create','PULSE'],['Write','SCRIBE']].map(([l,a])=>(
+              <button key={l} className="hq-btn" onClick={()=>{setSA(AGENTS.findIndex(ag=>ag.n===a));setView('chat');}}>{l}</button>
+            ))}
+          </div>
+          <button className="btn-primary" onClick={()=>val.trim()&&setView('chat')} style={{padding:'.4rem .875rem',fontSize:12.5}}>Send</button>
+        </div>
+      </div>
+      <div className="ha" style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(145px,1fr))',gap:'.625rem',maxWidth:680,width:'100%'}}>
+        {kpis.map(k=>(
+          <div key={k.l} className="metric-card" onClick={()=>setView(k.v)}>
+            <div style={{fontSize:24,fontWeight:800,color:k.c,marginBottom:2,lineHeight:1}}>{k.n}</div>
+            <div style={{fontSize:10.5,color:'var(--t3)',fontWeight:600,textTransform:'uppercase',letterSpacing:'.06em'}}>{k.l}</div>
+            <div style={{fontSize:11,color:'var(--t2)',marginTop:3}}>{k.s}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ── AGENTS ── */
+const Agents = ({ setView, setSA }) => {
+  useEffect(()=>{ g.from('.aa',{y:14,opacity:0,stagger:.04,duration:.5,ease:'power2.out'}); },[]);
+  const Row = ({a,pc,onClick}) => (
+    <div className="ag-row aa" onClick={onClick}>
+      <div style={{width:8,height:8,borderRadius:'50%',background:a.c,boxShadow:'0 0 8px '+a.c+'90',flexShrink:0}}></div>
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontSize:10,color:'var(--t3)',fontFamily:'JetBrains Mono,monospace',marginBottom:1}}>{a.id}</div>
+        <div style={{fontSize:13,fontWeight:700}}>{a.n}</div>
+        <div style={{fontSize:11,color:'var(--t2)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{a.desc}</div>
+      </div>
+      <span className={'pill '+pc}>{a.s}</span>
+    </div>
+  );
+  return (
+    <div style={{overflowY:'auto',flex:1}}>
+      <p style={{fontSize:13,color:'var(--t2)',marginBottom:'1rem',lineHeight:1.6,padding:'1rem 1.5rem 0'}}>22 agents registered. Every agent ships with CV, JD, User Manual, Training Manual, and Performance Dashboard. Agents are hires, not tools.</p>
+      <div style={{padding:'0 1.5rem 1.5rem'}}>
+        <div className="sec-lbl" style={{color:'#10b981'}}>Signed and Active (15)</div>
+        <div className="ag-grid">{AGENTS.map((a,i)=><Row key={a.n} a={a} pc={a.s==='ONLINE'?'pill-on':'pill-sb'} onClick={()=>{setSA(i);setView('chat');}} />)}</div>
+        <div className="sec-lbl" style={{color:'#f59e0b'}}>In Queue (3)</div>
+        <div className="ag-grid">{QUEUE_A.map(a=><Row key={a.n} a={a} pc="pill-q" onClick={()=>toast(a.n+' is in queue — activating soon')} />)}</div>
+        <div className="sec-lbl" style={{color:'#ef4444'}}>Planned (2)</div>
+        <div className="ag-grid">{PLANNED_A.map(a=><Row key={a.n} a={a} pc="pill-p" onClick={()=>toast(a.n+' — colour assignment pending')} />)}</div>
+      </div>
+    </div>
+  );
+};
+
+/* ── AGENT CHAT ── */
+const AgentChat = ({ selAgent, setSA }) => {
+  const [msgs, setMsgs] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(); const ag = AGENTS[selAgent];
+  useEffect(()=>{
+    setMsgs([{type:'agent',text:'Agent '+ag.n+' active. Ask anything — I respond from my full intelligence DNA. What needs solving today?',time:now()}]);
+    g.from('.cp',{y:10,opacity:0,stagger:.03,duration:.45,ease:'power2.out'});
+  },[selAgent]);
+  useEffect(()=>{ bottomRef.current?.scrollIntoView({behavior:'smooth'}); },[msgs]);
+  const send = async () => {
+    if(!input.trim()||loading) return;
+    const txt=input.trim(); setInput('');
+    const h=[...msgs,{type:'user',text:txt,time:now()}];
+    setMsgs(h); setLoading(true);
+    try {
+      const sys='You are '+ag.n+', PhoennixAI '+ag.r+'. DNA: '+ag.dna+'\n\nContext: PhoennixAI (double-N always). Founder: Valerie Wilcox. 22 agents. C&C = Cupcakes and Cocktails keto bakery run by Mayah. Always end with one clear next action. Plain text only — no markdown bold, no triple dashes, no em dashes, no emoji.';
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,system:sys,messages:h.filter(m=>m.type!=='typing').map(m=>({role:m.type==='user'?'user':'assistant',content:m.text}))})});
+      const data=await res.json();
+      let reply=(data.content?.filter(b=>b.type==='text').map(b=>b.text).join('\n')||'Unable to connect.').replace(/\*\*/g,'').replace(/---/g,'').replace(/—/g,' - ');
+      setMsgs(m=>[...m,{type:'agent',text:reply,time:now()}]);
+    } catch { setMsgs(m=>[...m,{type:'agent',text:'Connection error. Check API access.',time:now()}]); }
+    setLoading(false);
+  };
+  return (
+    <div style={{display:'flex',flexDirection:'column',height:'calc(100vh - 49px)',overflow:'hidden'}}>
+      <div style={{display:'flex',gap:5,flexWrap:'wrap',padding:'.75rem 1.5rem',borderBottom:'.5px solid rgba(255,255,255,.06)',flexShrink:0}}>
+        {AGENTS.map((a,i)=>(
+          <button key={a.n} className="cp" onClick={()=>setSA(i)} style={{fontSize:11,padding:'3px 11px',borderRadius:100,border:'.5px solid '+(i===selAgent?a.c:'rgba(255,255,255,.08)'),background:i===selAgent?'rgba(91,95,238,.1)':'none',color:i===selAgent?a.c:'var(--t3)',cursor:'pointer',fontWeight:i===selAgent?600:400,transition:'all .15s',fontFamily:'inherit'}}>{a.n}</button>
+        ))}
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'1rem 1.5rem',display:'flex',flexDirection:'column',gap:'.75rem',maxWidth:780,width:'100%',alignSelf:'center'}}>
+        {msgs.map((m,i)=>(
+          <div key={i} className="msg-wrap" style={{display:'flex',flexDirection:'column',alignItems:m.type==='user'?'flex-end':'flex-start',gap:4}}>
+            {m.type==='agent'&&<div style={{fontSize:10,color:'var(--t3)',display:'flex',alignItems:'center',gap:5}}><span style={{width:7,height:7,borderRadius:'50%',background:ag.c,boxShadow:'0 0 5px '+ag.c+'80',display:'inline-block'}}></span>{ag.n} — {m.time}</div>}
+            <div className={m.type==='user'?'bubble-u':'bubble-a'} style={{maxWidth:'80%'}}>
+              {m.text.split('\n').map((ln,j)=><div key={j}>{ln||<br/>}</div>)}
+            </div>
+            <div className="msg-acts" style={{justifyContent:m.type==='user'?'flex-end':'flex-start'}}>
+              {m.type==='user'&&<span style={{fontSize:10,color:'var(--t3)',paddingRight:4}}>{m.time}</span>}
+              <button className="act-btn" onClick={()=>navigator.clipboard.writeText(m.text).then(()=>toast('Copied'))}>Copy</button>
+              {m.type==='agent'&&<button className="act-btn" onClick={()=>toast('Regenerating...')}>Refresh</button>}
+            </div>
+          </div>
+        ))}
+        {loading&&<div className="bubble-a" style={{maxWidth:'80%',display:'flex',gap:5,padding:'.75rem'}}>{[0,1,2].map(i=><span key={i} className="typing-dot" style={{animationDelay:i*.2+'s'}}></span>)}</div>}
+        <div ref={bottomRef}/>
+      </div>
+      <div style={{padding:'.75rem 1.5rem',borderTop:'.5px solid rgba(255,255,255,.06)',display:'flex',gap:'.5rem',maxWidth:780,width:'100%',alignSelf:'center',flexShrink:0}}>
+        <textarea value={input} onChange={e=>setInput(e.target.value)} placeholder={'Message '+ag.n+'...'} rows={1} className="field" style={{flex:1,minHeight:44}} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}} />
+        <button onClick={send} disabled={loading} className="btn-primary" style={{padding:'0 1rem',fontSize:13,borderRadius:10,opacity:loading?.5:1}}>Send</button>
+      </div>
+    </div>
+  );
+};
+
+/* ── ROUTINES ── */
+const Routines = () => {
+  const [sel,setSel]=useState(0); const [nr,setNR]=useState(false); const [trig,setTrig]=useState(0);
+  const r=ROUTINES[sel];
+  return (
+    <div style={{display:'flex',flex:1,height:'calc(100vh - 49px)',overflow:'hidden'}}>
+      <div style={{width:250,borderRight:'.5px solid rgba(255,255,255,.06)',background:'rgba(6,8,18,.65)',display:'flex',flexDirection:'column'}}>
+        <div style={{padding:'.875rem 1rem',borderBottom:'.5px solid rgba(255,255,255,.06)',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <span style={{fontSize:14,fontWeight:600,display:'flex',alignItems:'center',gap:7}}>⚡ Routines</span>
+          <button onClick={()=>setNR(true)} style={{width:26,height:26,background:'rgba(255,255,255,.05)',border:'.5px solid rgba(255,255,255,.1)',borderRadius:7,color:'var(--t2)',cursor:'pointer',fontSize:18,display:'flex',alignItems:'center',justifyContent:'center',lineHeight:1,fontFamily:'inherit'}}>+</button>
+        </div>
+        <div style={{flex:1,overflowY:'auto',padding:'.375rem'}}>
+          {ROUTINES.map((rt,i)=>(
+            <div key={rt.name} className={'rt-item '+(sel===i&&!nr?'active':'')} onClick={()=>{setSel(i);setNR(false);}}>
+              <div className="rt-dot" style={{background:rt.color,boxShadow:'0 0 6px '+rt.color+'60'}}></div>{rt.name}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{flex:1,display:'flex',flexDirection:'column',overflowY:'auto'}}>
+        {nr ? (
+          <div style={{padding:'1.5rem',maxWidth:680}}>
+            <div style={{fontSize:18,fontWeight:700,marginBottom:3}}>New routine</div>
+            <p style={{fontSize:13,color:'var(--t2)',marginBottom:'1.25rem'}}>Create a templated routine that runs on schedule, by API, or webhook.</p>
+            <label style={{fontSize:12,fontWeight:500,color:'var(--t2)',display:'block',marginBottom:5}}>Name <span style={{color:'#ef4444'}}>*</span></label>
+            <input className="field" placeholder="e.g., Daily code review" style={{marginBottom:'1rem'}} />
+            <label style={{fontSize:12,fontWeight:500,color:'var(--t2)',display:'block',marginBottom:5}}>Instructions</label>
+            <textarea className="field" rows={5} placeholder="Describe what the agent should do in each session..." style={{marginBottom:0}} />
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'.5rem .9rem',background:'rgba(255,255,255,.02)',borderBottom:'.5px solid rgba(255,255,255,.07)',marginBottom:'1rem',fontSize:12,color:'var(--t3)'}}>
+              <span>Select a repository</span><span>Claude Sonnet 4.6</span>
+            </div>
+            <div style={{marginBottom:'.625rem',fontSize:13,fontWeight:500}}>Select a trigger</div>
+            {[['◎','Schedule','Run on a recurring cron schedule or once at a future time'],['◈','GitHub event','Run when a GitHub webhook event fires'],['</>','API','Trigger from your own code by sending a POST request']].map(([ic,tn,td],i)=>(
+              <div key={tn} className={'trig-opt '+(trig===i?'sel':'')} onClick={()=>setTrig(i)}>
+                <span style={{fontSize:16,width:20,textAlign:'center'}}>{ic}</span>
+                <div><div style={{fontSize:13,fontWeight:600,marginBottom:2}}>{tn}</div><div style={{fontSize:12,color:'var(--t2)'}}>{td}</div></div>
+              </div>
+            ))}
+            <div style={{background:'rgba(245,158,11,.07)',border:'.5px solid rgba(245,158,11,.25)',borderRadius:10,padding:'.75rem 1rem',fontSize:12.5,color:'#fbbf24',marginBottom:'1rem'}}>
+              Connectors 3 — Google Drive · Supabase · Vercel — Claude can use all tools including writes during runs.
+            </div>
+            <div style={{display:'flex',justifyContent:'flex-end',gap:'.625rem',paddingTop:'1rem',borderTop:'.5px solid rgba(255,255,255,.06)'}}>
+              <button onClick={()=>setNR(false)} className="btn-ghost">Cancel</button>
+              <button onClick={()=>{toast('Routine created');setNR(false);}} className="btn-solid">Create</button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div style={{padding:'1.125rem 1.5rem',borderBottom:'.5px solid rgba(255,255,255,.06)',display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:'1rem'}}>
+              <div>
+                <div style={{fontSize:17,fontWeight:700,display:'flex',alignItems:'center',gap:8,marginBottom:3}}>
+                  <div style={{width:10,height:10,borderRadius:'50%',background:r.color,boxShadow:'0 0 8px '+r.color}}></div>{r.name}
+                </div>
+                <div style={{fontSize:12.5,color:'var(--t2)'}}>{r.trigger} — Agent: {r.agent}</div>
+              </div>
+              <div style={{display:'flex',gap:6,flexShrink:0}}>
+                <button onClick={()=>toast(r.name+' paused')} className="btn-ghost" style={{padding:'.4rem .875rem',fontSize:12.5}}>Pause</button>
+                <button onClick={()=>toast(r.name+' running now...')} className="btn-solid" style={{padding:'.4rem .875rem',fontSize:12.5}}>Run now</button>
+              </div>
+            </div>
+            <div style={{padding:'1.25rem 1.5rem'}}>
+              <div className="sec-lbl" style={{marginTop:0}}>Last output — {r.lastRun}</div>
+              <div className="glass-card no-hover" style={{padding:'1rem 1.125rem',fontSize:13.5,lineHeight:1.75,marginBottom:'1rem',color:'var(--tx)'}}>{r.output}</div>
+              <div className="sec-lbl">Description</div>
+              <p style={{fontSize:13.5,color:'var(--t2)',lineHeight:1.75,marginBottom:'1.25rem'}}>{r.desc}</p>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.625rem'}}>
+                {[['Next run',r.next],['Agent',r.agent],['Trigger',r.trigger],['Status','Active']].map(([k,v])=>(
+                  <div key={k} className="glass-card no-hover" style={{padding:'.875rem'}}>
+                    <div style={{fontSize:10,color:'var(--t3)',textTransform:'uppercase',letterSpacing:'.08em',fontWeight:600,marginBottom:3}}>{k}</div>
+                    <div style={{fontSize:13,fontWeight:500,color:k==='Status'?'var(--gn)':'var(--tx)'}}>{v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ── DESIGN ── */
+const Design = () => {
+  const [tab,setTab]=useState('d'); const [type,setType]=useState('hi');
+  const cards=[{n:'Mission Control v3',s:'Design system · Today',g:'rgba(91,95,238,0.3),rgba(0,207,255,0.12)'},{n:'Brand System 2026',s:'Design system · Yesterday',g:'rgba(255,107,43,0.25),rgba(245,158,11,0.1)'},{n:'C&C Bakery UI',s:'Prototype · 3 days ago',g:'rgba(16,185,129,0.2),rgba(0,207,255,0.08)'}];
+  return (
+    <div style={{display:'flex',flex:1,height:'calc(100vh - 49px)',overflow:'hidden'}}>
+      <div style={{width:270,borderRight:'.5px solid rgba(255,255,255,.06)',background:'rgba(6,8,18,.65)',padding:'1.125rem',overflowY:'auto'}}>
+        <div style={{fontSize:11,fontWeight:600,color:'var(--t3)',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:'.875rem'}}>New prototype</div>
+        <input className="field" placeholder="Project name" style={{marginBottom:'.875rem'}} />
+        <div style={{fontSize:12,fontWeight:500,color:'var(--t2)',marginBottom:5}}>Design system</div>
+        <div className="glass-card" style={{padding:'.5rem .875rem',marginBottom:'.875rem',display:'flex',alignItems:'center',gap:'.625rem',cursor:'pointer'}}>
+          <div style={{width:24,height:24,borderRadius:6,background:'linear-gradient(135deg,#00CFFF,#5B5FEE)',flexShrink:0}}></div>
+          <div><div style={{fontSize:13,fontWeight:600}}>PhoennixAI System</div><div style={{fontSize:11,color:'var(--t3)'}}>Default</div></div>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'.5rem',margin:'.875rem 0'}}>
+          {[['w','Wireframe','var(--s3)'],['hi','High fidelity','linear-gradient(135deg,rgba(91,95,238,0.3),rgba(0,207,255,0.1))']].map(([k,lbl,bg])=>(
+            <div key={k} className={'type-card '+(type===k?'sel':'')} onClick={()=>setType(k)}>
+              <div className="type-preview" style={{background:bg}}>◧</div>
+              <div style={{fontSize:11,fontWeight:500,color:'var(--t2)'}}>{lbl}</div>
+            </div>
+          ))}
+        </div>
+        <button className="btn-primary" onClick={()=>toast('Design project created — ARIA + PULSE activated')} style={{width:'100%',borderRadius:10}}>+ Create</button>
+        <div style={{fontSize:11,color:'var(--t3)',textAlign:'center',marginTop:'.625rem'}}>Only visible to you by default</div>
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'1.5rem'}}>
+        <div style={{display:'flex',gap:'1.5rem',marginBottom:'1.5rem',borderBottom:'.5px solid rgba(255,255,255,.06)'}}>
+          {[['d','Designs'],['e','Examples'],['s','Design systems']].map(([k,lbl])=>(
+            <div key={k} onClick={()=>setTab(k)} style={{fontSize:14,fontWeight:500,padding:'.5rem 0',borderBottom:'2px solid '+(tab===k?'var(--tx)':'transparent'),cursor:'pointer',color:tab===k?'var(--tx)':'var(--t2)',marginBottom:-.5,transition:'all .15s'}}>{lbl}</div>
+          ))}
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(190px,1fr))',gap:'.875rem'}}>
+          {(tab==='d'?cards:tab==='e'?[{n:'Learn PhoennixAI Design',s:'Quick tutorial',g:'var(--s3)'}]:[{n:'PhoennixAI System',s:'Design system · Default',g:'linear-gradient(135deg,rgba(91,95,238,0.35),rgba(0,207,255,0.18))'}]).map(c=>(
+            <div key={c.n} className="glass-card" style={{cursor:'pointer',overflow:'hidden'}} onClick={()=>toast(c.n)}>
+              <div style={{height:110,background:'linear-gradient(135deg,'+c.g+')',display:'flex',alignItems:'center',justifyContent:'center',fontSize:26,color:'rgba(255,255,255,.3)'}}>P</div>
+              <div style={{padding:'.75rem'}}>
+                <div style={{fontSize:13,fontWeight:600,marginBottom:2}}>{c.n}</div>
+                <div style={{fontSize:11,color:'#9398ff'}}>{c.s}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── CLIENT DATA ── */
+const ClientData = () => {
+  useEffect(()=>{ g.from('.ca',{y:14,opacity:0,stagger:.05,duration:.5,ease:'power2.out'}); },[]);
+  const m=[{n:'24',l:'Total Clients',d:'+3 this month',c:'#A78BFA'},{n:'18',l:'Active',d:'+2 from trial',c:'#10b981'},{n:'3',l:'Trials Ending',d:'7 days avg',c:'#f59e0b'},{n:'£47.2k',l:'MRR',d:'+18.4%',c:'#5B5FEE'},{n:'1,847',l:'Agent Calls Today',d:'+230 vs yesterday',c:'#00CFFF'},{n:'98.7%',l:'Uptime (30d)',d:'KAIROS nominal',c:'#10b981'}];
+  const rows=[['Apex Ventures Ltd','ABOS Pro','CLAUDE, LEDGER, SAGE','342','£899','ONLINE'],['Nova Digital Agency','MarkOS Growth','PULSE, RELAY, ECHO','218','£349','ONLINE'],['Meridian Capital','FinOS Enterprise','LEDGER, SIGNAL, SAGE','156','£749','ONLINE'],['Bolt Startup Studio','ABOS Starter','CLAUDE, PA, RELAY','89','£149','QUEUE'],['Crafted Interiors Co','MarkOS Starter','PULSE, ECHO','44','£99','QUEUE'],['Green Path Fund','FinOS Pro','LEDGER, SAGE','12','£399','STANDBY']];
+  return (
+    <div style={{padding:'1.5rem',overflowY:'auto',flex:1}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(170px,1fr))',gap:'.625rem',marginBottom:'1.5rem'}}>
+        {m.map(k=><div key={k.l} className="metric-card ca"><div style={{fontSize:24,fontWeight:800,color:k.c,marginBottom:2,lineHeight:1}}>{k.n}</div><div style={{fontSize:10.5,color:'var(--t3)',fontWeight:600,textTransform:'uppercase',letterSpacing:'.06em'}}>{k.l}</div><div style={{fontSize:11,color:'var(--t2)',marginTop:3}}>{k.d}</div></div>)}
+      </div>
+      <div className="sec-lbl ca">Recent Client Activity</div>
+      <div className="glass-card no-hover ca" style={{overflow:'hidden',marginBottom:'1.5rem'}}>
+        <table className="dt"><thead><tr><th>Client</th><th>Plan</th><th>Agents</th><th>Calls (7d)</th><th>MRR</th><th>Status</th></tr></thead>
+          <tbody>{rows.map(r=><tr key={r[0]}><td style={{color:'var(--tx)',fontWeight:500}}>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td><td>{r[4]}</td><td><span className={'pill '+(r[5]==='ONLINE'?'pill-on':r[5]==='QUEUE'?'pill-q':'pill-sb')}>{r[5]==='ONLINE'?'Active':r[5]==='QUEUE'?'Trial':'Inactive'}</span></td></tr>)}</tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+/* ── CUSTOMIZE ── */
+const Customize = () => {
+  const [panel,setPanel]=useState('skills'); const [ss,setSS]=useState(0); const [sc,setSC]=useState(0);
+  const s=SKILLS[ss]; const c=CONNECTORS[sc];
+  return (
+    <div style={{display:'flex',flex:1,height:'calc(100vh - 49px)',overflow:'hidden'}}>
+      <div style={{width:150,borderRight:'.5px solid rgba(255,255,255,.06)',padding:'.625rem',background:'rgba(6,8,18,.65)'}}>
+        <div style={{fontSize:10,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'var(--t3)',padding:'.375rem .75rem',marginBottom:4}}>Settings</div>
+        {[['skills','Skills'],['connectors','Connectors']].map(([k,lbl])=>(
+          <div key={k} onClick={()=>setPanel(k)} style={{display:'flex',alignItems:'center',gap:8,padding:'.5rem .75rem',borderRadius:8,fontSize:13,color:panel===k?'var(--tx)':'var(--t2)',background:panel===k?'rgba(91,95,238,.1)':'transparent',cursor:'pointer',fontWeight:500,transition:'all .15s',marginBottom:2}}>{lbl}</div>
+        ))}
+      </div>
+      {panel==='skills'?(
+        <>
+          <div style={{width:215,borderRight:'.5px solid rgba(255,255,255,.06)',overflowY:'auto',padding:'.5rem'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'.5rem .75rem',fontSize:10,fontWeight:600,letterSpacing:'.08em',textTransform:'uppercase',color:'var(--t3)'}}>Personal skills <span style={{color:'#9398ff',fontSize:16,fontWeight:400,cursor:'pointer'}}>+</span></div>
+            {SKILLS.map((sk,i)=><div key={sk.n} onClick={()=>setSS(i)} className={'panel-row '+(ss===i?'active':'')}><div className="panel-ico">{sk.n.charAt(0).toUpperCase()}</div>{sk.n.substring(0,18)}</div>)}
+          </div>
+          <div style={{flex:1,overflowY:'auto',padding:'1.5rem'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'.5px solid rgba(255,255,255,.06)'}}>
+              <div style={{fontSize:17,fontWeight:700}}>{s.n}</div>
+              <div className={'toggle-track on'} onClick={()=>{}} style={{cursor:'pointer'}}><div className="toggle-thumb"></div></div>
+            </div>
+            <div style={{display:'flex',gap:'1.5rem',marginBottom:'1rem',flexWrap:'wrap',fontSize:12}}>
+              {[['Added by','You'],['Updated',s.d],['Trigger',s.t]].map(([k,v])=><div key={k}><div style={{fontSize:10,color:'var(--t3)',textTransform:'uppercase',letterSpacing:'.08em',fontWeight:600}}>{k}</div><div style={{fontWeight:500}}>{v}</div></div>)}
+            </div>
+            <p style={{fontSize:13,color:'var(--t2)',lineHeight:1.75,marginBottom:'1.25rem'}}>{s.desc}</p>
+            <div className="glass-card no-hover" style={{padding:'1.125rem',fontSize:13,color:'var(--t2)',lineHeight:1.75}}><strong style={{color:'var(--tx)'}}>Skill preview</strong><br/><br/>{s.desc}</div>
+          </div>
+        </>
+      ):(
+        <>
+          <div style={{width:215,borderRight:'.5px solid rgba(255,255,255,.06)',overflowY:'auto',padding:'.5rem'}}>
+            <div style={{fontSize:10,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'var(--t3)',padding:'.375rem .75rem'}}>Web</div>
+            {CONNECTORS.map((cn,i)=><div key={cn.n} onClick={()=>setSC(i)} className={'panel-row '+(sc===i?'active':'')}><div className="panel-ico" style={{fontWeight:700}}>{cn.ico}</div>{cn.n}</div>)}
+          </div>
+          <div style={{flex:1,overflowY:'auto',padding:'1.5rem'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.25rem',paddingBottom:'1.25rem',borderBottom:'.5px solid rgba(255,255,255,.06)'}}>
+              <div style={{fontSize:17,fontWeight:700,display:'flex',alignItems:'center',gap:'.75rem'}}><div style={{width:36,height:36,borderRadius:9,background:'rgba(255,255,255,.05)',border:'.5px solid rgba(255,255,255,.1)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,fontWeight:700}}>{c.ico}</div>{c.n}</div>
+              <button onClick={()=>toast('Disconnected from '+c.n)} className="btn-ghost">Disconnect</button>
+            </div>
+            <p style={{fontSize:13.5,color:'var(--t2)',lineHeight:1.75,marginBottom:'1.25rem'}}>{c.desc}</p>
+            <ul style={{listStyle:'none'}}>
+              {c.features.map(f=><li key={f} style={{fontSize:13,color:'var(--t2)',lineHeight:1.65,padding:'.375rem 0',borderBottom:'.5px solid rgba(255,255,255,.04)',display:'flex',gap:'.75rem'}}><span style={{width:5,height:5,borderRadius:'50%',background:'#9398ff',flexShrink:0,marginTop:8}}></span>{f}</li>)}
+            </ul>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+/* ── USER MANUAL ── */
+const UserManual = () => {
+  const [sel,setSel]=useState(0);
+  return (
+    <div style={{display:'flex',flex:1,height:'calc(100vh - 49px)',overflow:'hidden'}}>
+      <div style={{width:220,borderRight:'.5px solid rgba(255,255,255,.06)',padding:'.875rem .625rem',overflowY:'auto',background:'rgba(6,8,18,.65)'}}>
+        <div style={{fontSize:11,fontWeight:600,color:'var(--t2)',textTransform:'uppercase',letterSpacing:'.08em',padding:'.25rem .75rem',marginBottom:'.5rem'}}>Contents</div>
+        {MANUAL.map((m,i)=><div key={m.t} onClick={()=>setSel(i)} className={'toc-item '+(sel===i?'active':'')}><span style={{fontSize:10,color:'var(--t3)',fontFamily:'JetBrains Mono,monospace',fontWeight:600,width:18,flexShrink:0}}>{String(i+1).padStart(2,'0')}</span>{m.t}</div>)}
+      </div>
+      <div style={{flex:1,overflowY:'auto',padding:'2.5rem',maxWidth:720}}>
+        {MANUAL.map((m,i)=>(
+          <div key={m.t} style={{display:sel===i?'block':'none',marginBottom:'3rem'}}>
+            <div style={{fontSize:10,fontWeight:700,letterSpacing:'.14em',textTransform:'uppercase',color:'#9398ff',marginBottom:'.5rem'}}>Chapter {String(i+1).padStart(2,'0')}</div>
+            <div style={{fontSize:22,fontWeight:700,letterSpacing:'-.4px',marginBottom:'1rem'}}>{m.t}</div>
+            {m.body.split('\n\n').map((p,j)=><p key={j} style={{fontSize:14,color:'var(--t2)',lineHeight:1.85,marginBottom:'.875rem'}}>{p}</p>)}
+            {m.key&&<div style={{background:'rgba(91,95,238,.08)',border:'.5px solid rgba(91,95,238,.2)',borderLeft:'3px solid #9398ff',borderRadius:'0 10px 10px 0',padding:'.875rem 1.125rem',marginTop:'.875rem',fontSize:13.5,color:'var(--tx)',lineHeight:1.7,fontStyle:'italic'}}>{m.key}</div>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ── APP ── */
+const App = () => {
+  const [loggedIn,setLoggedIn]=useState(false);
+  const [user,setUser]=useState('Valerie');
+  const [view,setView]=useState('home');
+  const [selAgent,setSA]=useState(0);
+  useEffect(()=>{ initCanvas(); },[]);
+  const handleLogin = (em) => {
+    const n=em.split('@')[0]; setUser(n.charAt(0).toUpperCase()+n.slice(1));
+    setLoggedIn(true);
+    setTimeout(()=>{
+      g.from('#sidebar',{x:-220,duration:.7,ease:'power3.out'});
+      g.from('#main',{opacity:0,duration:.6,delay:.2});
+    },50);
+  };
+  const handleSetView = (v) => {
+    const ov=document.getElementById('overlay');
+    g.to(ov,{opacity:1,duration:.12,onComplete:()=>{ setView(v); g.to(ov,{opacity:0,duration:.18,delay:.05}); }});
+  };
+  const TITLES={home:'PhoennixAI',agents:'Agent Roster',chat:'Agent Chat',routines:'Routines',design:'Design',client:'Client Dashboard',customize:'Customize',manual:'User Manual'};
+  if(!loggedIn) return <Login onLogin={handleLogin}/>;
+  return (
+    <div>
+      <Sidebar view={view} setView={handleSetView} user={user}/>
+      <div id="main">
+        <Topbar title={TITLES[view]||'PhoennixAI'}/>
+        {view==='home'&&<Home setView={handleSetView} setSA={setSA}/>}
+        {view==='agents'&&<Agents setView={handleSetView} setSA={setSA}/>}
+        {view==='chat'&&<AgentChat selAgent={selAgent} setSA={setSA}/>}
+        {view==='routines'&&<Routines/>}
+        {view==='design'&&<Design/>}
+        {view==='client'&&<ClientData/>}
+        {view==='customize'&&<Customize/>}
+        {view==='manual'&&<UserManual/>}
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
