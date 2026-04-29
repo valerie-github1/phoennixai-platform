@@ -805,7 +805,7 @@ const AgentChat = ({ selAgent, setSA, openPreview }) => {
       let reply=(data.content?.filter(b=>b.type==='text').map(b=>b.text).join('\n')||data.error?.message||'No response').replace(/\*\*/g,'').replace(/---/g,'').replace(/—/g,' - ');
       setMsgs(m=>[...m,{type:'agent',text:reply,time:now()}]);
       const htmlMatch = reply.match(/<!DOCTYPE html>[\s\S]*<\/html>/i)||reply.match(/<html[\s\S]*<\/html>/i);
-      const codeMatch = reply.match(/```(?:html|jsx|tsx|js|ts|css)\n([\s\S]+?)```/);
+      const codeMatch = reply.match(new RegExp('\x60\x60\x60(?:html|jsx|tsx|js|ts|css)\\n([\\s\\S]+?)\x60\x60\x60'));
       if(htmlMatch&&openPreview) openPreview(htmlMatch[0],'html',ag.n+' — Generated output');
       else if(codeMatch&&openPreview) openPreview(codeMatch[1],'code',ag.n+' — Code output');
     } catch(err) {
