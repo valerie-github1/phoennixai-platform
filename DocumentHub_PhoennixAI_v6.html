@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PhoennixAI · Internal Document Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Agdasima:wght@400;700&family=Fira+Code:wght@300;400;500&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── PHOENNIXAI DOCUMENT HUB — BRAND TOKENS ── */
+:root {
+  --slate:     #556970;
+  --slate-d:   #3E4F55;
+  --slate-l:   #7A9098;
+  --olive:     #ABA944;
+  --olive-d:   #8A8835;
+  --olive-l:   #C9C877;
+  --white:     #FFFFFF;
+  --off-white: #F7F6F2;
+  --fog:       #EFF0EA;
+  --stone:     #D6D5C8;
+  --ink:       #1F2426;
+  --ink2:      #3D4447;
+  --ink3:      #6B7477;
+  --ink4:      #9BA4A7;
+  --border:    rgba(85,105,112,0.12);
+  --border2:   rgba(85,105,112,0.22);
+  --shadow-sm: 0 1px 3px rgba(31,36,38,0.06), 0 1px 2px rgba(31,36,38,0.04);
+  --shadow:    0 4px 12px rgba(31,36,38,0.08), 0 2px 4px rgba(31,36,38,0.05);
+  --shadow-lg: 0 16px 48px rgba(31,36,38,0.12), 0 4px 12px rgba(31,36,38,0.06);
+  --r:         6px;
+  --display:   'Agdasima', sans-serif;
+  --body:      'Source Serif 4', Georgia, serif;
+  --mono:      'Fira Code', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--off-white);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 14px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--stone); border-radius: 2px; }
+
+/* ── LAYOUT ── */
+.shell { display: flex; height: 100vh; overflow: hidden; }
+.sidebar {
+  width: 280px; flex-shrink: 0;
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.main { flex: 1; overflow-y: auto; background: var(--off-white); }
+
+/* ── SIDEBAR ── */
+.sb-header {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0;
+  background: var(--white);
+  z-index: 10;
+}
+.sb-wordmark {
+  font-family: var(--display);
+  font-size: 17px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: 2px;
+}
+.sb-wordmark strong { color: var(--olive); font-weight: 700; }
+.sb-tagline {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 2px;
+  color: var(--ink4);
+  text-transform: uppercase;
+}
+
+.sb-search {
+  margin: 16px 16px 0;
+  position: relative;
+}
+.sb-search input {
+  width: 100%;
+  background: var(--fog);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 8px 12px 8px 32px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.sb-search input:focus { border-color: var(--slate); }
+.sb-search input::placeholder { color: var(--ink4); }
+.sb-search-icon {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--ink4); width: 13px; height: 13px;
+}
+
+.sb-nav { padding: 20px 8px; flex: 1; }
+.sb-sect-label {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--ink4);
+  padding: 0 12px; margin-bottom: 6px; margin-top: 16px;
+  display: block;
+}
+.sb-sect-label:first-child { margin-top: 0; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--r);
+  cursor: pointer; transition: all 0.15s;
+  color: var(--ink2); font-size: 13px; font-family: var(--body);
+  font-weight: 400; position: relative;
+  user-select: none;
+}
+.nav-item:hover { background: var(--fog); color: var(--slate); }
+.nav-item.active {
+  background: rgba(85,105,112,0.08);
+  color: var(--slate-d);
+  font-weight: 600;
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 2.5px; border-radius: 0 2px 2px 0;
+  background: var(--slate);
+}
+.nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-badge {
+  margin-left: auto;
+  font-family: var(--mono); font-size: 9px; font-weight: 500;
+  background: rgba(171,169,68,0.15);
+  color: var(--olive-d); border-radius: 10px;
+  padding: 1px 7px; flex-shrink: 0;
+}
+.nav-badge.alert { background: rgba(239,68,68,0.12); color: #dc2626; }
+
+.sb-divider { height: 1px; background: var(--border); margin: 8px 12px; }
+
+.sb-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+}
+.sb-user {
+  display: flex; align-items: center; gap: 10px;
+}
+.sb-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--slate), var(--olive));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--white); flex-shrink: 0;
+}
+.sb-user-info { flex: 1; min-width: 0; }
+.sb-user-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+.sb-user-role { font-family: var(--mono); font-size: 9px; color: var(--ink4); }
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(247,246,242,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 56px;
+  display: flex; align-items: center; gap: 16px;
+}
+.tb-breadcrumb {
+  font-family: var(--mono); font-size: 10px; color: var(--ink4);
+  display: flex; align-items: center; gap: 6px; flex: 1;
+}
+.tb-bc-sep { opacity: 0.4; }
+.tb-bc-current { color: var(--slate-d); font-weight: 500; }
+.tb-controls { display: flex; gap: 8px; }
+.tb-btn {
+  height: 32px; padding: 0 14px;
+  border-radius: var(--r);
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer; border: 1px solid;
+  transition: all 0.2s; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+}
+.tb-btn-primary {
+  background: var(--slate); border-color: var(--slate);
+  color: var(--white);
+}
+.tb-btn-primary:hover { background: var(--slate-d); border-color: var(--slate-d); }
+.tb-btn-secondary {
+  background: transparent; border-color: var(--border2);
+  color: var(--ink3);
+}
+.tb-btn-secondary:hover { border-color: var(--slate-l); color: var(--slate); }
+
+/* ── CONTENT ── */
+.content { padding: 32px; }
+
+/* ── STAT ROW ── */
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  position: relative; overflow: hidden;
+}
+.stat-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.stat-card.slate::after { background: var(--slate); }
+.stat-card.olive::after { background: var(--olive); }
+.stat-card.green::after { background: #22c55e; }
+.stat-card.amber::after { background: #f59e0b; }
+.stat-label {
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--ink4); margin-bottom: 6px;
+}
+.stat-value {
+  font-family: var(--display); font-size: 34px; letter-spacing: 1px;
+  color: var(--ink); line-height: 1;
+}
+.stat-sub { font-family: var(--mono); font-size: 9.5px; color: var(--ink4); margin-top: 4px; }
+
+/* ── SECTION HEADER ── */
+.section-hd {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-family: var(--display); font-size: 20px; letter-spacing: 2px;
+  color: var(--slate-d); text-transform: uppercase;
+}
+.section-title span { color: var(--olive); }
+.section-count {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px;
+  color: var(--ink4); text-transform: uppercase;
+}
+
+/* ── DOC GRID ── */
+.doc-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px;
+  margin-bottom: 36px;
+}
+.doc-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.doc-card:hover {
+  border-color: var(--slate-l);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+.dc-type-bar {
+  height: 3px; width: 40px; border-radius: 2px;
+  margin-bottom: 14px;
+}
+.dc-title {
+  font-family: var(--display); font-size: 15px; letter-spacing: 1px;
+  color: var(--ink); margin-bottom: 4px; line-height: 1.3;
+}
+.dc-sub {
+  font-family: var(--body); font-style: italic; font-size: 12px;
+  color: var(--ink3); margin-bottom: 12px;
+}
+.dc-meta { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.dc-meta-tag {
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: 1px;
+  padding: 2px 7px; border-radius: 3px;
+  color: var(--ink3); background: var(--fog);
+}
+.dc-status {
+  display: flex; align-items: center; gap: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.dc-status-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.dc-status-label { font-family: var(--mono); font-size: 9px; color: var(--ink3); flex: 1; }
+.dc-action-row { display: flex; gap: 6px; }
+.dc-action {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 1px;
+  padding: 4px 8px; border-radius: 3px;
+  cursor: pointer; border: 1px solid var(--border2);
+  color: var(--ink3); background: transparent;
+  transition: all 0.15s;
+}
+.dc-action:hover { border-color: var(--slate-l); color: var(--slate); }
+
+/* STATUS COLOURS */
+.s-live { background: #22c55e; }
+.s-draft { background: var(--olive); }
+.s-review { background: #3b82f6; }
+.s-archived { background: var(--stone); }
+.s-blocked { background: #ef4444; }
+
+/* ── AGENT TABLE ── */
+.agent-table-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 36px;
+}
+.at-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.at-title {
+  font-family: var(--display); font-size: 16px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--slate-d); flex: 1;
+}
+.at-filter {
+  display: flex; gap: 6px;
+}
+.at-filt-btn {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 1.5px;
+  text-transform: uppercase; padding: 4px 10px;
+  border-radius: 3px; cursor: pointer; border: 1px solid var(--border2);
+  color: var(--ink3); background: transparent; transition: all 0.15s;
+}
+.at-filt-btn.active { background: var(--slate); border-color: var(--slate); color: var(--white); }
+.at-filt-btn:hover:not(.active) { border-color: var(--slate-l); color: var(--slate); }
+
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(--fog); }
+th {
+  text-align: left; padding: 10px 16px;
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--ink4); font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px; color: var(--ink2);
+}
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.12s; cursor: pointer; }
+tbody tr:hover td { background: var(--fog); }
+.td-agent {
+  display: flex; align-items: center; gap: 8px;
+}
+.agent-init {
+  width: 26px; height: 26px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  color: var(--white); flex-shrink: 0;
+}
+.td-name { font-family: var(--body); font-weight: 600; font-size: 12.5px; color: var(--ink); }
+.td-sub { font-family: var(--mono); font-size: 9px; color: var(--ink4); }
+.td-pill {
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: 1px;
+  padding: 2px 8px; border-radius: 3px; display: inline-block;
+}
+.pill-active { background: rgba(34,197,94,0.1); color: #16a34a; }
+.pill-standby { background: rgba(85,105,112,0.1); color: var(--slate-d); }
+.pill-queued { background: rgba(245,158,11,0.1); color: #b45309; }
+.pill-blocked { background: rgba(239,68,68,0.1); color: #dc2626; }
+
+/* ── KNOWLEDGE BASE PANEL ── */
+.kb-panel {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 36px;
+}
+.kb-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 16px; }
+.kb-item {
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  transition: all 0.2s; cursor: pointer;
+}
+.kb-item:hover { border-color: var(--olive-d); box-shadow: var(--shadow-sm); }
+.kb-icon {
+  width: 32px; height: 32px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 10px;
+}
+.kb-item-title { font-family: var(--display); font-size: 13px; letter-spacing: 1px; color: var(--ink); margin-bottom: 2px; }
+.kb-item-sub { font-family: var(--mono); font-size: 9px; color: var(--ink4); }
+.kb-item-count { margin-top: 8px; font-family: var(--mono); font-size: 9px; color: var(--olive-d); }
+
+/* ── MODAL ── */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(31,36,38,0.4);
+  backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--white);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  width: 100%; max-width: 600px;
+  max-height: 80vh; overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  padding: 32px;
+  animation: modalIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes modalIn { from { opacity:0; transform: scale(0.96) translateY(10px); } }
+.modal-close {
+  float: right; background: none; border: none;
+  font-size: 18px; color: var(--ink4); cursor: pointer;
+  margin-left: 12px; margin-top: -4px;
+  transition: color 0.15s;
+}
+.modal-close:hover { color: var(--ink); }
+.modal-type {
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--olive-d); margin-bottom: 8px;
+}
+.modal-title {
+  font-family: var(--display); font-size: 24px; letter-spacing: 2px;
+  color: var(--ink); margin-bottom: 6px;
+}
+.modal-desc {
+  font-family: var(--body); font-style: italic;
+  color: var(--ink3); font-size: 13.5px; margin-bottom: 20px;
+  line-height: 1.7;
+}
+.modal-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;
+}
+.modal-field label {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--ink4); display: block; margin-bottom: 4px;
+}
+.modal-field p {
+  font-size: 12.5px; color: var(--ink); font-family: var(--body);
+}
+.modal-actions { display: flex; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+/* ── UPLOAD ZONE ── */
+.upload-zone {
+  border: 2px dashed var(--border2);
+  border-radius: var(--r);
+  padding: 32px;
+  text-align: center;
+  margin-top: 20px;
+  transition: all 0.2s; cursor: pointer;
+}
+.upload-zone:hover { border-color: var(--olive); background: rgba(171,169,68,0.04); }
+.upload-zone-title { font-family: var(--display); font-size: 16px; letter-spacing: 1.5px; color: var(--slate-d); margin-bottom: 4px; }
+.upload-zone-sub { font-family: var(--mono); font-size: 9.5px; color: var(--ink4); }
+
+/* ── BLOCKER BAR ── */
+.blocker-bar {
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  display: flex; gap: 12px; align-items: flex-start;
+  margin-bottom: 24px;
+}
+.bb-title { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #dc2626; margin-bottom: 2px; }
+.bb-body { font-size: 12px; color: var(--ink3); }
+
+/* RESPONSIVE */
+@media(max-width:900px) {
+  .sidebar { width: 220px; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .kb-grid { grid-template-columns: repeat(2,1fr); }
+}
+@media(max-width:640px) {
+  .sidebar { display: none; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── CONSOLE PANEL ── */
+.console-panel {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 200;
+  background: var(--ink);
+  border-top: 1px solid rgba(171,169,68,0.25);
+  font-family: var(--mono);
+  transition: height 0.25s cubic-bezier(.4,0,.2,1);
+  height: 32px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.console-panel.expanded { height: 220px; }
+.console-panel.expanded .console-body { display: flex; }
+.console-header {
+  height: 32px; min-height: 32px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 14px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.console-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--olive);
+  flex-shrink: 0;
+  animation: pulse-dot 3s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.4} }
+.console-label {
+  font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--olive); font-weight: 500;
+}
+.console-counts {
+  display: flex; gap: 8px; margin-left: 4px;
+}
+.cc-badge {
+  font-size: 9px; padding: 1px 6px; border-radius: 3px;
+  font-weight: 500;
+}
+.cc-error { background: rgba(239,68,68,0.15); color: #f87171; }
+.cc-warn  { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.cc-info  { background: rgba(171,169,68,0.12); color: var(--olive); }
+.console-spacer { flex: 1; }
+.console-chevron {
+  font-size: 10px; color: var(--ink4);
+  transition: transform 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.console-panel.expanded .console-chevron { transform: rotate(180deg); }
+.console-actions { display: flex; gap: 6px; }
+.con-btn {
+  font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: transparent; color: var(--ink4);
+  cursor: pointer; transition: all 0.15s;
+}
+.con-btn:hover { background: rgba(255,255,255,0.06); color: var(--white); }
+.con-btn.clear-btn { border-color: rgba(239,68,68,0.25); color: #f87171; }
+.con-btn.clear-btn:hover { background: rgba(239,68,68,0.1); }
+
+.console-body {
+  flex: 1; overflow-y: auto; padding: 8px 0;
+  display: none;
+  flex-direction: column;
+}
+.console-body::-webkit-scrollbar { width: 3px; }
+.console-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.con-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 4px 14px;
+  transition: background 0.1s;
+  border-left: 2px solid transparent;
+}
+.con-row:hover { background: rgba(255,255,255,0.03); }
+.con-row.con-error { border-left-color: #ef4444; }
+.con-row.con-warn  { border-left-color: #f59e0b; }
+.con-row.con-info  { border-left-color: var(--olive); }
+.con-row.con-ok    { border-left-color: #22c55e; }
+.con-time {
+  font-size: 9px; color: var(--ink4); white-space: nowrap; min-width: 50px; margin-top: 1px;
+}
+.con-icon { font-size: 10px; margin-top: 1px; min-width: 12px; text-align: center; }
+.con-error .con-icon { color: #f87171; }
+.con-warn  .con-icon { color: #fbbf24; }
+.con-info  .con-icon { color: var(--olive-l); }
+.con-ok    .con-icon { color: #4ade80; }
+.con-msg {
+  font-size: 10px; color: rgba(255,255,255,0.7); line-height: 1.5; flex: 1;
+}
+.con-src {
+  font-size: 9px; color: var(--ink3); white-space: nowrap; margin-top: 1px;
+}
+.console-empty {
+  display: flex; align-items: center; justify-content: center; flex: 1;
+  font-size: 10px; color: var(--ink4); letter-spacing: 1px; text-transform: uppercase;
+}
+
+/* Adapt main layout when console is expanded */
+.shell { padding-bottom: 32px; transition: padding-bottom 0.25s; }
+.console-panel.expanded ~ * .shell,
+body.console-open .shell { padding-bottom: 220px; }
+
+@media (max-width: 640px) {
+  .console-panel.expanded { height: 260px; }
+  .console-actions { display: none; }
+  .con-src { display: none; }
+}
+
+/* ── ROUTINES PANEL ── */
+.routines-panel { display:none; }
+.routines-panel.active { display:flex; gap:0; height:calc(100vh - 56px - 64px); overflow:hidden; }
+.rt-sidebar { width:260px; flex-shrink:0; background:var(--white); border-right:1px solid var(--border); overflow-y:auto; }
+.rt-sidebar-hd { padding:18px 20px 12px; border-bottom:1px solid var(--border); }
+.rt-sidebar-title { font-family:var(--display); font-size:14px; letter-spacing:2px; text-transform:uppercase; color:var(--slate-d); display:flex; align-items:center; justify-content:space-between; }
+.rt-add-btn { width:22px; height:22px; border-radius:50%; border:1px solid var(--border2); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--slate); font-size:14px; transition:all 0.15s; }
+.rt-add-btn:hover { background:var(--slate); color:var(--white); }
+.rt-item { padding:12px 20px; cursor:pointer; border-bottom:1px solid var(--border); transition:all 0.15s; display:flex; align-items:center; gap:10px; }
+.rt-item:hover { background:var(--fog); }
+.rt-item.active { background:rgba(85,105,112,0.07); border-left:2.5px solid var(--slate); }
+.rt-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.rt-dot.live { background:#22c55e; box-shadow:0 0 0 2px rgba(34,197,94,0.25); animation:pulse-dot 2s infinite; }
+.rt-dot.paused { background:#f59e0b; }
+.rt-dot.queued { background:var(--stone); }
+@keyframes pulse-dot { 0%,100%{box-shadow:0 0 0 2px rgba(34,197,94,0.25)} 50%{box-shadow:0 0 0 4px rgba(34,197,94,0.12)} }
+.rt-item-name { font-size:13px; font-weight:500; color:var(--ink2); }
+.rt-item-agent { font-family:var(--mono); font-size:9px; color:var(--ink4); margin-top:1px; }
+.rt-detail { flex:1; overflow-y:auto; padding:28px 32px; }
+.rt-detail-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:6px; }
+.rt-detail-name { font-family:var(--display); font-size:22px; letter-spacing:1.5px; color:var(--ink); display:flex; align-items:center; gap:10px; }
+.rt-live-badge { font-family:var(--mono); font-size:9px; letter-spacing:1px; padding:3px 9px; border-radius:100px; background:rgba(34,197,94,0.12); color:#166534; border:1px solid rgba(34,197,94,0.2); }
+.rt-paused-badge { font-family:var(--mono); font-size:9px; letter-spacing:1px; padding:3px 9px; border-radius:100px; background:rgba(245,158,11,0.12); color:#92400e; border:1px solid rgba(245,158,11,0.2); }
+.rt-detail-actions { display:flex; gap:8px; }
+.rt-trigger-sub { font-family:var(--mono); font-size:10px; color:var(--ink4); margin-bottom:20px; }
+.rt-output-box { background:var(--fog); border:1px solid var(--border); border-radius:var(--r); padding:16px 18px; margin-bottom:20px; }
+.rt-output-label { font-family:var(--mono); font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--ink4); margin-bottom:8px; }
+.rt-output-text { font-size:13px; color:var(--ink); line-height:1.6; }
+.rt-meta-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+.rt-meta-card { background:var(--white); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px; }
+.rt-meta-label { font-family:var(--mono); font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--ink4); margin-bottom:4px; }
+.rt-meta-value { font-size:13px; font-weight:500; color:var(--ink); }
+.rt-cron-box { background:var(--white); border:1px solid var(--border); border-radius:var(--r); padding:18px 20px; margin-bottom:20px; }
+.rt-cron-title { font-family:var(--mono); font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--ink4); margin-bottom:10px; }
+.rt-cron-row { display:flex; gap:8px; align-items:center; }
+.rt-cron-field { flex:1; }
+.rt-cron-field label { font-family:var(--mono); font-size:8px; color:var(--ink4); display:block; margin-bottom:3px; letter-spacing:1px; }
+.rt-cron-field input { width:100%; border:1px solid var(--border2); border-radius:4px; padding:6px 8px; font-family:var(--mono); font-size:12px; color:var(--ink); background:var(--fog); outline:none; transition:border-color 0.15s; }
+.rt-cron-field input:focus { border-color:var(--slate); }
+.rt-api-box { background:var(--ink); border-radius:var(--r); padding:16px 18px; }
+.rt-api-label { font-family:var(--mono); font-size:8px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:8px; }
+.rt-api-code { font-family:var(--mono); font-size:11px; color:#7ECEC4; line-height:1.7; }
+.rt-api-code span { color:#ABA944; }
+.rt-desc-box { font-family:var(--body); font-size:13px; color:var(--ink3); line-height:1.7; padding:14px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-bottom:16px; }
+
+/* ── MODEL SELECTOR ── */
+.model-selector { position:relative; display:flex; align-items:center; }
+.model-pill { display:flex; align-items:center; gap:6px; padding:5px 12px 5px 10px; border-radius:100px; border:1px solid var(--border2); background:transparent; cursor:pointer; font-family:var(--mono); font-size:9px; letter-spacing:0.5px; color:var(--ink3); transition:all 0.15s; white-space:nowrap; }
+.model-pill:hover { border-color:var(--slate-l); color:var(--slate); background:var(--fog); }
+.model-dot { width:6px; height:6px; border-radius:50%; background:#22c55e; flex-shrink:0; }
+.model-dropdown { position:absolute; top:calc(100% + 6px); right:0; width:240px; background:var(--white); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:200; overflow:hidden; display:none; }
+.model-dropdown.open { display:block; }
+.model-dd-hd { padding:10px 14px 8px; font-family:var(--mono); font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--ink4); border-bottom:1px solid var(--border); }
+.model-opt { padding:10px 14px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:background 0.1s; }
+.model-opt:hover { background:var(--fog); }
+.model-opt.selected { background:rgba(85,105,112,0.06); }
+.model-opt-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.model-opt-info { flex:1; }
+.model-opt-name { font-size:12px; font-weight:500; color:var(--ink); margin-bottom:1px; }
+.model-opt-sub { font-family:var(--mono); font-size:9px; color:var(--ink4); }
+.model-opt-badge { font-family:var(--mono); font-size:8px; padding:2px 6px; border-radius:3px; background:rgba(171,169,68,0.15); color:var(--olive-d); }
+
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-header">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <img src="data:image/png;base64,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" alt="PhoennixAI" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;box-shadow:0 0 0 1.5px rgba(85,105,112,0.18)">
+      <div class="sb-wordmark" style="margin-bottom:0">Phoenn<strong>ix</strong>AI</div>
+    </div>
+    <div class="sb-tagline">Internal Document Hub</div>
+  </div>
+
+  <div class="sb-search">
+    <svg class="sb-search-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5">
+      <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5l2.5 2.5" stroke-linecap="round"/>
+    </svg>
+    <input type="text" placeholder="Search documents..." oninput="filterDocs(this.value)" id="sb-search-inp">
+  </div>
+
+  <nav class="sb-nav">
+    <span class="sb-sect-label">Operations</span>
+    <div class="nav-item active" onclick="setSection('bos',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+      BOS · Business Ops
+      <span class="nav-badge">12</span>
+    </div>
+    <div class="nav-item" onclick="setSection('fos',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M3 10l4-4 3 3 4-4"/><rect x="2" y="2" width="12" height="12" rx="1.5"/></svg>
+      FOS · Financial Ops
+      <span class="nav-badge">8</span>
+    </div>
+    <div class="nav-item" onclick="setSection('mos',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5"/></svg>
+      MOS · Marketing Ops
+      <span class="nav-badge">15</span>
+    </div>
+    <div class="nav-item" onclick="setSection('sos',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M3 5h10M3 8h7M3 11h5"/><rect x="1" y="2" width="14" height="12" rx="1.5"/></svg>
+      SOS · Sales Ops
+      <span class="nav-badge">9</span>
+    </div>
+    <div class="nav-item" onclick="setSection('dos-d',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5S18.33 11 17.5 11z"/></svg>
+      DOS · Designer Ops
+      <span class="nav-badge">6</span>
+    </div>
+    <div class="nav-item" onclick="setSection('dos-doc',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M9 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V6M9 2l4 4M9 2v4h4"/></svg>
+      DOS · Documentation
+      <span class="nav-badge alert">3</span>
+    </div>
+    <div class="nav-item" onclick="setSection('ros',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 2"/></svg>
+      ROS · Routine Ops
+    </div>
+
+    <div class="sb-divider"></div>
+    <span class="sb-sect-label">Client Projects</span>
+    <div class="nav-item" onclick="setSection('ryd',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M2 4a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4z"/><path d="M6 8l2 2 4-4"/></svg>
+      RYD · Reset Your Digital
+      <span class="nav-badge">21</span>
+    </div>
+
+    <div class="sb-divider"></div>
+    <span class="sb-sect-label">Platform</span>
+    <div class="nav-item" onclick="setSection('agents',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M4 8h8M4 5h6M4 11h4"/><rect x="1" y="2" width="14" height="12" rx="1.5"/></svg>
+      Agent DNA &amp; Profiles
+    </div>
+    <div class="nav-item" onclick="setSection('brand',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M8 2l1.5 3.5 3.5.5-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5z"/></svg>
+      Brand &amp; Style Guides
+    </div>
+    <div class="nav-item" onclick="setSection('arch',this)">
+      <svg class="nav-icon" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><rect x="2" y="10" width="4" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/><rect x="6" y="2" width="4" height="4" rx="1"/><path d="M4 10V8h8v2M8 6v2"/></svg>
+      Architecture Docs
+    </div>
+  </nav>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">VA</div>
+      <div class="sb-user-info">
+        <div class="sb-user-name">Valerie</div>
+        <div class="sb-user-role">Founder · Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="tb-breadcrumb">
+      <span>PhoennixAI</span>
+      <span class="tb-bc-sep">/</span>
+      <span>Internal Platform</span>
+      <span class="tb-bc-sep">/</span>
+      <span class="tb-bc-current" id="bc-current">BOS · Business Operations</span>
+    </div>
+    <div class="tb-controls">
+      <div class="model-selector">
+        <button class="model-pill" onclick="toggleModelDropdown(event)" id="model-pill-btn">
+          <div class="model-dot" id="model-dot"></div>
+          <span id="model-label">Claude Sonnet 4.6 — Adaptive</span>
+          <svg width="8" height="8" fill="none" viewBox="0 0 8 8" stroke="currentColor" stroke-width="1.5"><path d="M2 3l2 2 2-2"/></svg>
+        </button>
+        <div class="model-dropdown" id="model-dropdown">
+          <div class="model-dd-hd">AI Model Selection</div>
+          <div class="model-opt selected" onclick="selectModel('sonnet','Claude Sonnet 4.6 — Adaptive','#22c55e',this)">
+            <div class="model-opt-dot" style="background:#22c55e"></div>
+            <div class="model-opt-info">
+              <div class="model-opt-name">Claude Sonnet 4.6</div>
+              <div class="model-opt-sub">Adaptive mode · Default</div>
+            </div>
+            <span class="model-opt-badge">ACTIVE</span>
+          </div>
+          <div class="model-opt" onclick="selectModel('opus','Claude Opus 4.6 — ULTRAPLAN','#f59e0b',this)">
+            <div class="model-opt-dot" style="background:#f59e0b"></div>
+            <div class="model-opt-info">
+              <div class="model-opt-name">Claude Opus 4.6</div>
+              <div class="model-opt-sub">ULTRAPLAN · 30-min deep compute</div>
+            </div>
+            <span class="model-opt-badge" style="background:rgba(245,158,11,0.12);color:#92400e">ULTRAPLAN</span>
+          </div>
+          <div class="model-opt" onclick="selectModel('haiku','Claude Haiku 4.5 — Fast','#3b82f6',this)">
+            <div class="model-opt-dot" style="background:#3b82f6"></div>
+            <div class="model-opt-info">
+              <div class="model-opt-name">Claude Haiku 4.5</div>
+              <div class="model-opt-sub">Fast · Low-latency tasks</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="tb-btn tb-btn-secondary" onclick="showUpload()">
+        <svg width="10" height="10" fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.5"><path d="M6 2v6M3 5l3-3 3 3"/><path d="M2 10h8" stroke-linecap="round"/></svg>
+        Upload
+      </button>
+      <button class="tb-btn tb-btn-primary" onclick="showNewDoc()">
+        <svg width="10" height="10" fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.5"><path d="M6 2v8M2 6h8"/></svg>
+        New Document
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ROUTINES PANEL — shown only when ROS selected -->
+    <div class="routines-panel" id="routines-panel">
+      <div class="rt-sidebar">
+        <div class="rt-sidebar-hd">
+          <div class="rt-sidebar-title">
+            <span>⚡ Routines</span>
+            <button class="rt-add-btn" onclick="alert('Routine builder coming soon — cron expression + agent + trigger')">+</button>
+          </div>
+        </div>
+        <div class="rt-item active" onclick="showRoutine('morning',this)">
+          <div class="rt-dot live"></div>
+          <div><div class="rt-item-name">Morning Brief</div><div class="rt-item-agent">Agent: PA</div></div>
+        </div>
+        <div class="rt-item" onclick="showRoutine('email',this)">
+          <div class="rt-dot live"></div>
+          <div><div class="rt-item-name">Email Triage</div><div class="rt-item-agent">Agent: PA</div></div>
+        </div>
+        <div class="rt-item" onclick="showRoutine('health',this)">
+          <div class="rt-dot live"></div>
+          <div><div class="rt-item-name">System Health</div><div class="rt-item-agent">Agent: PROBE</div></div>
+        </div>
+        <div class="rt-item" onclick="showRoutine('issue',this)">
+          <div class="rt-dot live"></div>
+          <div><div class="rt-item-name">Issue Triage</div><div class="rt-item-agent">Agent: GRID</div></div>
+        </div>
+        <div class="rt-item" onclick="showRoutine('cii',this)">
+          <div class="rt-dot live"></div>
+          <div><div class="rt-item-name">CII World Scan</div><div class="rt-item-agent">Agent: SCOUT</div></div>
+        </div>
+        <div class="rt-item" onclick="showRoutine('content',this)">
+          <div class="rt-dot paused"></div>
+          <div><div class="rt-item-name">Content Batch</div><div class="rt-item-agent">Agent: PULSE</div></div>
+        </div>
+        <div class="rt-item" onclick="showRoutine('financial',this)">
+          <div class="rt-dot live"></div>
+          <div><div class="rt-item-name">Financial Snapshot</div><div class="rt-item-agent">Agent: LEDGER</div></div>
+        </div>
+        <div class="rt-item" onclick="showRoutine('pr',this)">
+          <div class="rt-dot live"></div>
+          <div><div class="rt-item-name">PR Digest</div><div class="rt-item-agent">Agent: RELAY</div></div>
+        </div>
+      </div>
+
+      <div class="rt-detail" id="rt-detail">
+        <!-- populated by showRoutine() -->
+      </div>
+    </div>
+
+    <!-- BLOCKER BAR (shown conditionally) -->
+    <div id="main-content-wrap">
+    <div class="blocker-bar" id="blocker-bar" style="display:none">
+      <svg width="18" height="18" fill="none" viewBox="0 0 18 18" stroke="#dc2626" stroke-width="1.5"><path d="M9 2L16 15H2L9 2z" stroke-linejoin="round"/><line x1="9" y1="7" x2="9" y2="11"/><circle cx="9" cy="13" r=".75" fill="#dc2626" stroke="none"/></svg>
+      <div>
+        <div class="bb-title">Action Required — 3 Documents Pending Approval</div>
+        <div class="bb-body">Agent DNA v4.0, KAIROS Reference, and RYD Working Glossary are awaiting founder sign-off before agents can use them as knowledge base.</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card slate">
+        <div class="stat-label">Total Documents</div>
+        <div class="stat-value" id="stat-total">74</div>
+        <div class="stat-sub">Across all systems</div>
+      </div>
+      <div class="stat-card olive">
+        <div class="stat-label">Live &amp; Active</div>
+        <div class="stat-value" id="stat-live">31</div>
+        <div class="stat-sub">In agent knowledge base</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Approved This Month</div>
+        <div class="stat-value">18</div>
+        <div class="stat-sub">April 2026</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-label">Pending Review</div>
+        <div class="stat-value" id="stat-pending">8</div>
+        <div class="stat-sub">Requires sign-off</div>
+      </div>
+    </div>
+
+    <!-- DOCUMENT GRID -->
+    <div class="section-hd">
+      <div class="section-title" id="section-title">BOS · Business <span>Operations</span></div>
+      <div class="section-count" id="section-count">12 documents · Last updated 26 Apr 2026</div>
+    </div>
+
+    <div class="doc-grid" id="doc-grid">
+      <!-- Cards populated by JS -->
+    </div>
+
+    <!-- AGENT REGISTRY TABLE -->
+    <div class="section-hd">
+      <div class="section-title">Active <span>Agents</span></div>
+      <div class="section-count">29 total agents · 27 active · 2 planned</div>
+    </div>
+
+    <div class="agent-table-wrap">
+      <div class="at-header">
+        <div class="at-title">Agent Registry</div>
+        <div class="at-filter">
+          <button class="at-filt-btn active" onclick="filterAgents('all',this)">All</button>
+          <button class="at-filt-btn" onclick="filterAgents('active',this)">Active</button>
+          <button class="at-filt-btn" onclick="filterAgents('standby',this)">Standby</button>
+          <button class="at-filt-btn" onclick="filterAgents('queued',this)">Queued</button>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Agent</th>
+            <th>Designation</th>
+            <th>Status</th>
+            <th>Docs Owned</th>
+            <th>Last Active</th>
+          </tr>
+        </thead>
+        <tbody id="agent-tbody">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- KNOWLEDGE BASE -->
+    <div class="section-hd">
+      <div class="section-title">Knowledge <span>Base</span></div>
+      <div class="section-count">Shared across all agent systems</div>
+    </div>
+    <div class="kb-panel">
+      <div class="kb-grid">
+        <div class="kb-item" onclick="showKBModal('agent-dna')">
+          <div class="kb-icon" style="background:rgba(85,105,112,0.1)">
+            <svg width="18" height="18" fill="none" viewBox="0 0 18 18" stroke="var(--slate)" stroke-width="1.5"><path d="M4 6s1-2 5-2 5 2 5 2M4 12s1 2 5 2 5-2 5-2"/><path d="M6 4c0 2.5.5 5 3 8"/><path d="M12 4c0 2.5-.5 5-3 8"/><line x1="4" y1="9" x2="14" y2="9"/></svg>
+          </div>
+          <div class="kb-item-title">Agent DNA v4.0</div>
+          <div class="kb-item-sub">9 Laws · Constitutional framework</div>
+          <div class="kb-item-count">↑ Used by all 22 agents</div>
+        </div>
+        <div class="kb-item" onclick="showKBModal('kairos')">
+          <div class="kb-icon" style="background:rgba(171,169,68,0.1)">
+            <svg width="18" height="18" fill="none" viewBox="0 0 18 18" stroke="var(--olive-d)" stroke-width="1.5"><circle cx="9" cy="9" r="6.5"/><path d="M9 5v4l2.5 2.5"/></svg>
+          </div>
+          <div class="kb-item-title">KAIROS Daemon Reference</div>
+          <div class="kb-item-sub">v1.0 · 20 capabilities · Daemon ops</div>
+          <div class="kb-item-count">↑ Daemon framework — always-on</div>
+        </div>
+        <div class="kb-item" onclick="showKBModal('platform-arch')">
+          <div class="kb-icon" style="background:rgba(59,130,246,0.1)">
+            <svg width="18" height="18" fill="none" viewBox="0 0 18 18" stroke="#3b82f6" stroke-width="1.5"><rect x="2" y="11" width="4" height="5" rx="1"/><rect x="11" y="11" width="4" height="5" rx="1"/><rect x="6.5" y="2" width="4" height="5" rx="1"/><path d="M4 11V9h10v2M8.5 7v2"/></svg>
+          </div>
+          <div class="kb-item-title">Platform Architecture</div>
+          <div class="kb-item-sub">7 pillars · Competitive matrix · Tech stack</div>
+          <div class="kb-item-count">↑ Strategic reference</div>
+        </div>
+        <div class="kb-item" onclick="showKBModal('gstack')">
+          <div class="kb-icon" style="background:rgba(16,185,129,0.1)">
+            <svg width="18" height="18" fill="none" viewBox="0 0 18 18" stroke="#10b981" stroke-width="1.5"><path d="M3 6l6-3 6 3-6 3-6-3zM3 12l6 3 6-3M3 9l6 3 6-3"/></svg>
+          </div>
+          <div class="kb-item-title">gstack SKILL Registry</div>
+          <div class="kb-item-sub">23 skills · Q4 stack mapping</div>
+          <div class="kb-item-count">↑ NEXUS, PROBE, FORGE, ARIA</div>
+        </div>
+        <div class="kb-item" onclick="showKBModal('brand')">
+          <div class="kb-icon" style="background:rgba(139,92,246,0.1)">
+            <svg width="18" height="18" fill="none" viewBox="0 0 18 18" stroke="#7c3aed" stroke-width="1.5"><path d="M9 2l1.8 3.8 4.2.6-3 3 .7 4.2L9 11.8l-3.7 1.8.7-4.2-3-3 4.2-.6z"/></svg>
+          </div>
+          <div class="kb-item-title">Brand Identity System</div>
+          <div class="kb-item-sub">PhoennixAI · Full identity system · All platforms</div>
+          <div class="kb-item-count">↑ PULSE, ARIA agents</div>
+        </div>
+        <div class="kb-item" onclick="showKBModal('wealth')">
+          <div class="kb-icon" style="background:rgba(245,158,11,0.1)">
+            <svg width="18" height="18" fill="none" viewBox="0 0 18 18" stroke="#d97706" stroke-width="1.5"><path d="M3 13l4-6 3 4 2-2 4 4"/><rect x="1" y="1" width="16" height="16" rx="2"/></svg>
+          </div>
+          <div class="kb-item-title">Wealth Creation 2026</div>
+          <div class="kb-item-sub">Architecture of Wealth · Biblical laws</div>
+          <div class="kb-item-count">↑ SAGE — awaiting activation</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content-wrap -->
+
+  </div><!-- /content -->
+</main>
+</div><!-- /shell -->
+
+<!-- ── DOCUMENT MODAL ── -->
+<div class="modal-backdrop" id="doc-modal" onclick="closeModal('doc-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('doc-modal')">✕</button>
+    <div class="modal-type" id="m-type">BOS DOCUMENT</div>
+    <div class="modal-title" id="m-title">Document Title</div>
+    <div class="modal-desc" id="m-desc">Description text here.</div>
+    <div class="modal-row">
+      <div class="modal-field"><label>Status</label><p id="m-status">–</p></div>
+      <div class="modal-field"><label>Owner Agent</label><p id="m-owner">–</p></div>
+      <div class="modal-field"><label>Version</label><p id="m-ver">–</p></div>
+      <div class="modal-field"><label>Last Updated</label><p id="m-date">–</p></div>
+      <div class="modal-field"><label>Classification</label><p id="m-class">–</p></div>
+      <div class="modal-field"><label>Word Count</label><p id="m-words">–</p></div>
+    </div>
+    <div class="modal-actions">
+      <button class="tb-btn tb-btn-primary">Open Document</button>
+      <button class="tb-btn tb-btn-secondary" onclick="closeModal('doc-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── UPLOAD MODAL ── -->
+<div class="modal-backdrop" id="upload-modal" onclick="closeModal('upload-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal('upload-modal')">✕</button>
+    <div class="modal-type">DOCUMENT UPLOAD</div>
+    <div class="modal-title">Upload to Hub</div>
+    <div class="modal-desc">Upload a document to the PhoennixAI Internal Document Hub. All uploaded documents are auto-classified by SCRIBE and indexed in the knowledge base.</div>
+    <div class="upload-zone" onclick="document.getElementById('file-inp').click()">
+      <div class="upload-zone-title">DROP FILES HERE</div>
+      <div class="upload-zone-sub">or click to browse · PDF, DOCX, MD, HTML</div>
+    </div>
+    <input type="file" id="file-inp" style="display:none" multiple>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="tb-btn tb-btn-primary">Upload &amp; Index</button>
+      <button class="tb-btn tb-btn-secondary" onclick="closeModal('upload-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── DATA ── */
+const DOCS = {
+  bos: [
+    {title:'Mission Control BOS', sub:'Business Operations System — Full Platform', type:'BOS', status:'live', agent:'GRID', ver:'v2.4', date:'26 Apr 2026', cls:'Internal · Operational', words:'4,200', desc:'The complete Business Operations System interface. Dashboard, agent registry, KPI tracking, revenue intelligence. Deployed at phoennixai-mission-control GitHub Pages.', color:'var(--slate)'},
+    {title:'Command HQ', sub:'29-Agent Command & Control Centre', type:'BOS', status:'live', agent:'GRID', ver:'v3.1', date:'25 Apr 2026', cls:'Internal · Operational', words:'6,800', desc:'Full agent command centre with 9 tabs, 29 agents, SVG icons, Snowy animation. Deployed at the same GitHub Pages endpoint.', color:'var(--slate)'},
+    {title:'Agent DNA v4.0', sub:'Constitutional Laws — All 9 Agents', type:'BOS', status:'review', agent:'SCRIBE', ver:'v4.0', date:'22 Apr 2026', cls:'Internal · Constitutional', words:'2,100', desc:'The constitutional framework for all PhoennixAI agents. 9 Laws including Serve First, Autonomous Business Continuity, and Wealth Generation Mandate.', color:'var(--olive)'},
+    {title:'Platform Architecture', sub:'7 Pillar Strategy + Competitive Matrix', type:'BOS', status:'live', agent:'SAGE', ver:'v1.2', date:'20 Apr 2026', cls:'Internal · Strategic', words:'3,400', desc:'PhoennixAI platform pillars, competitive differentiation vs Anthropic, tech stack (Supabase, Next.js, Claude), revenue model and Year 1 ARR targets.', color:'var(--slate)'},
+    {title:'GitHub Repo Structure', sub:'phoennixai-internal-doc Filing System', type:'BOS', status:'live', agent:'GRID', ver:'v1.0', date:'26 Apr 2026', cls:'Internal · Governance', words:'800', desc:'Official folder structure for phoennixai-internal-doc repository. BOS, FOS, MOS, SOS, DOS-D, DOS-Doc, ROS, RYD, brand, agents directories.', color:'var(--slate)'},
+    {title:'KAIROS Daemon Reference', sub:'20 Capabilities · Always-On Daemon', type:'BOS', status:'review', agent:'KAIROS', ver:'v1.0', date:'19 Apr 2026', cls:'Internal · Technical', words:'1,800', desc:'KAIROS daemon naming (settled permanently), 20 capabilities, autoDream, tick-based heartbeat, confidence thresholds, destructive action gates, stakeholder use cases.', color:'var(--olive)'},
+  ],
+  fos: [
+    {title:'Revenue Architecture', sub:'Year 1 ARR £856K Model', type:'FOS', status:'draft', agent:'LEDGER', ver:'v0.8', date:'14 Apr 2026', cls:'Confidential · Financial', words:'2,200', desc:'ABOS, FinOS, MarkOS, WorldMonitor, SuperAgent, Capital Advisory, CodeGuard pricing and revenue projections.', color:'var(--olive)'},
+    {title:'Pricing Tiers — All Products', sub:'Monthly recurring and annual structures', type:'FOS', status:'draft', agent:'LEDGER', ver:'v0.5', date:'12 Apr 2026', cls:'Confidential · Financial', words:'1,100', desc:'Detailed tier breakdown for all PhoennixAI SaaS products with upsell paths and cohort assumptions.', color:'var(--olive)'},
+  ],
+  mos: [
+    {title:'PULSE Prompt Library', sub:'Marketing Agent Master Prompt Bank', type:'MOS', status:'live', agent:'PULSE', ver:'v2.0', date:'15 Apr 2026', cls:'Internal · Marketing', words:'9,400', desc:'Complete prompt library for PULSE marketing agent. Social, email, sales copy, brand voice guidelines.', color:'var(--slate)'},
+    {title:'Brand Voice Guide', sub:'PhoennixAI Tone, Language & Positioning', type:'MOS', status:'live', agent:'PULSE', ver:'v1.1', date:'10 Apr 2026', cls:'Internal · Brand', words:'1,600', desc:'Official brand voice: Created to Create. Intelligent by nature. Tone, word choices, dos and don\'ts.', color:'var(--slate)'},
+  ],
+  sos: [
+    {title:'Sales Playbook v1.0', sub:'Lead-to-Close Framework — All Products', type:'SOS', status:'draft', agent:'RELAY', ver:'v1.0', date:'20 Apr 2026', cls:'Internal · Sales', words:'2,800', desc:'Full sales playbook covering ABOS, FinOS, MarkOS pipeline. ICP profiles, objection handling, pricing conversations, proposal templates.', color:'var(--slate)'},
+    {title:'Client Onboarding Manual', sub:'Day 1 to Day 30 Experience Design', type:'SOS', status:'draft', agent:'RELAY', ver:'v0.8', date:'18 Apr 2026', cls:'Internal · Operations', words:'1,600', desc:'Step-by-step onboarding for new Phoenix Pro clients. Welcome sequence, first session agenda, success milestones at 7/14/30 days.', color:'var(--olive)'},
+    {title:'RELAY Outreach Templates', sub:'Cold DM, Email & Follow-up Library', type:'SOS', status:'live', agent:'RELAY', ver:'v1.1', date:'15 Apr 2026', cls:'Internal · Sales', words:'3,200', desc:'Complete outreach library for RELAY agent. LinkedIn DM sequences, cold email frameworks, follow-up cadences, reactivation plays.', color:'var(--slate)'},
+  ],
+  'dos-d': [
+    {title:'Design System — PhoennixAI', sub:'Tokens, Components, Spacing, Motion', type:'DOS', status:'live', agent:'ARIA', ver:'v2.0', date:'22 Apr 2026', cls:'Internal · Design', words:'4,100', desc:'Full design system: brand tokens, component library, typography scale, motion principles, dark/light mode specs. Agdasima display, Source Serif 4 body, Fira Code mono.', color:'var(--olive)'},
+    {title:'VANTAGE Brand System', sub:'RYD · Navy + Amber Intelligence Palette', type:'DOS', status:'live', agent:'PULSE', ver:'v1.0', date:'28 Apr 2026', cls:'Client · Brand', words:'1,200', desc:'VANTAGE — Digital Intelligence Platform brand. Deep navy #0D1B2A, amber #D4A017, IBM Plex Sans. Distinct from Phoenix Pro purple and PhoennixAI blue.', color:'#D4A017'},
+  ],
+  'dos-doc': [
+    {title:'Agent DNA v4.0 — PENDING', sub:'9 Laws · Awaiting Founder Sign-Off', type:'DOS-DOC', status:'review', agent:'SCRIBE', ver:'v4.0', date:'22 Apr 2026', cls:'Internal · Constitutional', words:'2,100', desc:'Constitutional framework for all 22 agents. Laws 7–9 added: Autonomous Business Continuity, Wealth Generation Mandate, Serve First. Requires Valerie sign-off before agents can reference.', color:'#ef4444'},
+    {title:'KAIROS Reference v1.0 — PENDING', sub:'Daemon Spec · Awaiting Founder Sign-Off', type:'DOS-DOC', status:'review', agent:'KAIROS', ver:'v1.0', date:'19 Apr 2026', cls:'Internal · Technical', words:'1,800', desc:'Complete KAIROS daemon reference. 20 capabilities, autoDream nightly at 02:00 UTC, 15-second blocking budget, confidence thresholds, destructive action gates. Awaiting sign-off.', color:'#ef4444'},
+    {title:'RYD Glossary v0.1 — PENDING', sub:'50 Terms · Section H Awaiting Nathan', type:'DOS-DOC', status:'review', agent:'SCRIBE', ver:'v0.1', date:'21 Apr 2026', cls:'Client · Working Draft', words:'3,800', desc:'Working glossary for RYD. Section H — 14 terms — remain unresolved pending Nathan Mather confirmation. Cannot be marked live until all terms confirmed.', color:'#ef4444'},
+  ],
+  ros: [
+    {title:'KAIROS Routine Schedule', sub:'8 Daily Routines · Daemon Execution', type:'ROS', status:'live', agent:'KAIROS', ver:'v1.2', date:'24 Apr 2026', cls:'Internal · Operations', words:'900', desc:'Morning Brief 07:00, Email Triage 16:00, System Health 13:00, Issue Triage 16:30, CII Scan 10:30, Content Batch Monday 09:00, Financial Snapshot 08:00, PR Digest 19:00.', color:'var(--slate)'},
+    {title:'PA Morning Brief Template', sub:'Valerie Daily Briefing — Exec Format', type:'ROS', status:'live', agent:'PA', ver:'v1.0', date:'17 Apr 2026', cls:'Internal · Operations', words:'600', desc:'Standard morning briefing format delivered by PA at 07:00. Priority tasks, calendar, financials snapshot, agent status, blocked items requiring Founder decision.', color:'var(--olive)'},
+  ],
+  ryd: [
+    {title:'RYD Developer Doc v1.0', sub:'Reset Your Digital — Technical Reference', type:'RYD CLIENT', status:'live', agent:'NEXUS', ver:'v1.0', date:'23 Apr 2026', cls:'Client · Confidential', words:'5,200', desc:'Complete technical documentation for the RYD Intelligence Platform. Architecture, agent setup, Vercel deployment, API routing.', color:'#3b82f6'},
+    {title:'RYD Working Glossary v0.1', sub:'50 Terms · Section H Pending Nathan', type:'RYD CLIENT', status:'draft', agent:'SCRIBE', ver:'v0.1', date:'21 Apr 2026', cls:'Client · Working Draft', words:'3,800', desc:'Working glossary for RYD terminology standardisation. 50 terms across 8 sections. Section H awaits Nathan input — 14 terms unresolved.', color:'#f59e0b'},
+    {title:'RYD Phase 1 Upload Interface', sub:'4-Agent Analysis System — Deployed', type:'RYD CLIENT', status:'live', agent:'NEXUS', ver:'v2.1', date:'27 Apr 2026', cls:'Client · Technical', words:'900', desc:'Upload interface for 3 programme documents. 4 agents fire sequentially. Run Analysis button unlocks at 3/3. Integrated into ryd-client-app-ashy.vercel.app.', color:'#3b82f6'},
+  ],
+  agents: [
+    {title:'Agent CVs — All 22', sub:'Full profiles, JDs, performance metrics', type:'AGENTS', status:'live', agent:'SCRIBE', ver:'v3.0', date:'01 Apr 2026', cls:'Internal · HR', words:'14,200', desc:'Individual CV, job description, OKRs, and performance dashboard for each of the 22 PhoennixAI named agents.', color:'var(--slate)'},
+    {title:'Superpowers Workflow Gate', sub:'Task routing and quality gate system', type:'AGENTS', status:'live', agent:'GRID', ver:'v2.0', date:'08 Apr 2026', cls:'Internal · Operational', words:'1,800', desc:'Superpowers workflow gate for routing tasks to the correct agent. Quality gates, escalation paths, confidence thresholds.', color:'var(--slate)'},
+  ],
+  brand: [
+    {title:'PhoennixAI Brand System', sub:'Electric Blue · Phoenix Logo · Doc Hub Palette', type:'BRAND', status:'live', agent:'PULSE', ver:'v2.1', date:'28 Apr 2026', cls:'Internal · Brand', words:'2,600', desc:'Brand system: PhoennixAI always double-N. Electric blue (#1E90FF/#4DB8FF) NOT orange. Phoenix logo on dark background. Document Hub visual identity: slate #556970, olive #ABA944, Agdasima display — these are now canonical PhoennixAI Doc Hub tokens. Phantom Gaming Studio colour TBD.', color:'var(--slate)'},
+    {title:'Phantom Gaming Studio — Brand', sub:'Gaming Studio · Colour TBD · In Queue', type:'BRAND', status:'draft', agent:'PULSE', ver:'v1.0', date:'10 Apr 2026', cls:'Internal · Brand · Subsidiary', words:'600', desc:'Brand system for Phantom Gaming Studio subsidiary. Current Agdasima typography retained. #556970 slate and #ABA944 olive are being reassigned as PhoennixAI Document Hub tokens. New Phantom Gaming colour palette pending — do not use until confirmed.', color:'var(--olive)'},
+  ],
+  arch: [
+    {title:'Tech Stack Reference', sub:'Supabase · Next.js · Claude · Vercel', type:'ARCHITECTURE', status:'live', agent:'NEXUS', ver:'v1.3', date:'18 Apr 2026', cls:'Internal · Technical', words:'2,800', desc:'Full tech stack: Supabase (PostgreSQL + pgvector + Auth + Realtime), Next.js 14+ App Router, Tailwind, shadcn/ui, Vercel. Claude Sonnet 4.6 primary, Opus 4.6 for ULTRAPLAN.', color:'#10b981'},
+    {title:'Own Brain Architecture', sub:'KAIROS + gbrain + claude-mem + Supabase', type:'ARCHITECTURE', status:'draft', agent:'SAGE', ver:'v0.3', date:'16 Apr 2026', cls:'Internal · R&D', words:'1,200', desc:'Own Brain project: KAIROS daemon + gbrain + claude-mem + Supabase pgvector integration. Post-RYD sprint planning.', color:'#f59e0b'},
+  ],
+};
+
+const AGENTS = [
+  /* CORE — 5 */
+  {init:'CL', name:'CLAUDE',   role:'Strategic Partner & Agent Manager',    status:'active',  docs:38, last:'Now',           color:'#FF6B2B', tier:'CORE'},
+  {init:'AR', name:'ARIA',     role:'AI Interface & Automation',            status:'active',  docs:14, last:'1 hr ago',      color:'#00E5FF', tier:'CORE'},
+  {init:'GD', name:'GRID',     role:'Project & Delivery Governance',        status:'active',  docs:24, last:'Now',           color:'#215CAE', tier:'CORE'},
+  {init:'SC', name:'SCRIBE',   role:'Document Production & Knowledge',      status:'active',  docs:31, last:'1 hr ago',      color:'#C49A6C', tier:'CORE'},
+  {init:'PA', name:'PA',       role:'Personal Assistant & Productivity',    status:'active',  docs:8,  last:'Morning',       color:'#F43F5E', tier:'CORE'},
+  /* INTELLIGENCE — 5 */
+  {init:'LD', name:'LEDGER',   role:'Financial Intelligence',               status:'active',  docs:7,  last:'3 days ago',    color:'#FFB830', tier:'INTELLIGENCE'},
+  {init:'RL', name:'RELAY',    role:'Conversion & Communications',          status:'active',  docs:6,  last:'Yesterday',     color:'#FB923C', tier:'INTELLIGENCE'},
+  {init:'SG', name:'SAGE',     role:'Research & Analytics',                 status:'active',  docs:9,  last:'Yesterday',     color:'#4682B4', tier:'INTELLIGENCE'},
+  {init:'ST', name:'SCOUT',    role:'Market Intelligence',                  status:'active',  docs:3,  last:'1 week ago',    color:'#00FF88', tier:'INTELLIGENCE'},
+  {init:'PS', name:'PULSE',    role:'Content & Marketing Intelligence',     status:'active',  docs:15, last:'5 hrs ago',     color:'#A78BFA', tier:'INTELLIGENCE'},
+  /* BUILD — 5 */
+  {init:'NX', name:'NEXUS',    role:'Build & Development',                  status:'active',  docs:18, last:'2 hrs ago',     color:'#7ECEC4', tier:'BUILD'},
+  {init:'PB', name:'PROBE',    role:'Quality Assurance',                    status:'active',  docs:12, last:'3 hrs ago',     color:'#84CC16', tier:'BUILD'},
+  {init:'FG', name:'FORGE',    role:'Product & Innovation',                 status:'active',  docs:5,  last:'4 days ago',    color:'#FF6B2B', tier:'BUILD'},
+  {init:'SL', name:'SIGNAL',   role:'Data & Integration Intelligence',      status:'active',  docs:4,  last:'4 days ago',    color:'#60A5FA', tier:'BUILD'},
+  {init:'EC', name:'ECHO',     role:'Community & DM Automation',            status:'active',  docs:3,  last:'2 days ago',    color:'#FB7185', tier:'BUILD'},
+  /* COMPANIONS — 3 */
+  {init:'SW', name:'SNOWY',    role:'Coworker Companion — White Tiger',     status:'active',  docs:2,  last:'Continuous',    color:'#0AFFFF', tier:'COMPANIONS'},
+  {init:'JY', name:'JAYDEN',   role:'Student Companion',                    status:'queued',  docs:0,  last:'Planned',       color:'#9D4EDD', tier:'COMPANIONS'},
+  {init:'MY', name:'MAYAH',    role:'Student Companion',                    status:'queued',  docs:0,  last:'Planned',       color:'#FF6B9D', tier:'COMPANIONS'},
+  /* ORCHESTRATION — 6 */
+  {init:'RF', name:'RUFLO',    role:'Multi-Agent Orchestration',            status:'active',  docs:4,  last:'Continuous',    color:'#9D4EDD', tier:'ORCHESTRATION'},
+  {init:'HM', name:'HERMES',   role:'Research Intelligence',                status:'active',  docs:2,  last:'Yesterday',     color:'#00FF9F', tier:'ORCHESTRATION'},
+  {init:'GS', name:'GOOSE',    role:'Autonomous Task Agent',                status:'active',  docs:1,  last:'2 days ago',    color:'#FFB347', tier:'ORCHESTRATION'},
+  {init:'CP', name:'COMPOSIO', role:'Tool Router — 250+ APIs',              status:'active',  docs:1,  last:'2 days ago',    color:'#4DB8FF', tier:'ORCHESTRATION'},
+  {init:'GR', name:'GRAPHIFY', role:'Knowledge Graph',                      status:'active',  docs:1,  last:'3 days ago',    color:'#FFD700', tier:'ORCHESTRATION'},
+  {init:'CW', name:'CLAW',     role:'Ultra Agent Power',                    status:'active',  docs:1,  last:'3 days ago',    color:'#C084FC', tier:'ORCHESTRATION'},
+  /* SPECIALIST — 5 */
+  {init:'CR', name:'CODEREV',  role:'Code Review & PR Quality',             status:'active',  docs:3,  last:'2 days ago',    color:'#22D3EE', tier:'SPECIALIST'},
+  {init:'MK', name:'MARKETER', role:'Marketing Skills Agent',               status:'active',  docs:2,  last:'4 days ago',    color:'#FF6B9D', tier:'SPECIALIST'},
+  {init:'AN', name:'ANIME',    role:'Animation Intelligence',               status:'active',  docs:1,  last:'5 days ago',    color:'#A78BFA', tier:'SPECIALIST'},
+  {init:'SE', name:'SECURITY', role:'Security Intelligence',                status:'active',  docs:2,  last:'3 days ago',    color:'#EF4444', tier:'SPECIALIST'},
+  {init:'WS', name:'WSHOBSON', role:'Specialist Agent Framework',           status:'active',  docs:1,  last:'5 days ago',    color:'#00C875', tier:'SPECIALIST'},
+];
+
+/* ── CURRENT STATE ── */
+let currentSection = 'bos';
+let currentFilter = 'all';
+
+/* ── INIT ── */
+function init() {
+  renderDocs('bos');
+  renderAgents('all');
+}
+
+/* ── DOCS ── */
+const STATUS_COLORS = {live:'var(--s-live)',draft:'var(--olive)',review:'#3b82f6',archived:'var(--stone)',blocked:'#ef4444'};
+const STATUS_LABELS = {live:'LIVE',draft:'DRAFT',review:'IN REVIEW',archived:'ARCHIVED',blocked:'BLOCKED'};
+const S_CLASSES = {live:'s-live',draft:'s-draft',review:'s-review',archived:'s-archived',blocked:'s-blocked'};
+
+function renderDocs(section, filter='') {
+  const grid = document.getElementById('doc-grid');
+  const docs = DOCS[section] || [];
+  const filtered = filter ? docs.filter(d => d.title.toLowerCase().includes(filter) || d.sub.toLowerCase().includes(filter)) : docs;
+  
+  grid.innerHTML = filtered.map((d,i) => `
+    <div class="doc-card" onclick="openDocModal(${JSON.stringify(d).replace(/"/g,'&quot;')})" style="animation:fadeUp 0.3s ${i*0.04}s both">
+      <div class="dc-type-bar" style="background:${d.color}"></div>
+      <div class="dc-title">${d.title}</div>
+      <div class="dc-sub">${d.sub}</div>
+      <div class="dc-meta">
+        <span class="dc-meta-tag">${d.type}</span>
+        <span class="dc-meta-tag">${d.agent}</span>
+        <span class="dc-meta-tag">${d.ver}</span>
+      </div>
+      <div class="dc-status">
+        <div class="dc-status-dot ${S_CLASSES[d.status]}"></div>
+        <span class="dc-status-label">${STATUS_LABELS[d.status]} · ${d.date}</span>
+        <div class="dc-action-row">
+          <button class="dc-action" onclick="event.stopPropagation();openDocModal(${JSON.stringify(d).replace(/"/g,'&quot;')})">VIEW</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ink4);font-family:var(--mono);font-size:11px">No documents found</div>';
+  }
+}
+
+/* ── SECTION SWITCH ── */
+const SECTION_LABELS = {bos:'BOS · Business Operations',fos:'FOS · Financial Operations',mos:'MOS · Marketing Operations',sos:'SOS · Sales Operations','dos-d':'DOS · Designer Operations','dos-doc':'DOS · Documentation',ros:'ROS · Routine Operations',ryd:'RYD · Reset Your Digital',agents:'Agent DNA & Profiles',brand:'Brand & Style Guides',arch:'Architecture Docs'};
+function setSection(s, el) {
+  currentSection = s;
+  document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('bc-current').textContent = SECTION_LABELS[s] || s;
+  const lbl = SECTION_LABELS[s] || s;
+  const parts = lbl.split('·');
+  document.getElementById('section-title').innerHTML = parts.length > 1
+    ? parts[0] + '· <span>' + parts.slice(1).join('·').trim() + '</span>'
+    : '<span>' + lbl + '</span>';
+
+  const isRoutines = s === 'ros';
+  document.getElementById('routines-panel').classList.toggle('active', isRoutines);
+  document.getElementById('main-content-wrap').style.display = isRoutines ? 'none' : '';
+
+  if (!isRoutines) {
+    const docs = DOCS[s] || [];
+    document.getElementById('section-count').textContent = `${docs.length} documents · Last updated 29 Apr 2026`;
+    renderDocs(s);
+  } else {
+    showRoutine('morning', document.querySelector('.rt-item'));
+  }
+}
+
+/* ── ROUTINES DATA ── */
+const ROUTINES = {
+  morning: {
+    name:'Morning Brief', agent:'PA', status:'live',
+    trigger:'Weekdays 07:00 BST', next:'Tomorrow 07:00',
+    cron:'0 7 * * 1-5',
+    last:'Today 07:00',
+    output:'3 meetings today. 7 emails (2 urgent). CII alert: Nigeria +2. MRR +1.2% vs yesterday.',
+    desc:'Complete daily intelligence briefing: calendar events, urgent emails, WorldMonitor signals, and LEDGER KPI snapshot. Delivered to Valerie as a structured priority brief.',
+  },
+  email: {
+    name:'Email Triage', agent:'PA', status:'live',
+    trigger:'Daily 08:00, 13:00, 17:00 BST', next:'Today 13:00',
+    cron:'0 8,13,17 * * *',
+    last:'Today 08:03',
+    output:'Inbox: 14 unread. 3 flagged urgent. 2 client replies (RYD, VANTAGE). 1 invoice chaser sent by LEDGER.',
+    desc:'Automatic inbox triage: categorises, prioritises, drafts responses for approval. Urgent items escalated to PA immediately. Low-priority items batched for end-of-day review.',
+  },
+  health: {
+    name:'System Health', agent:'PROBE', status:'live',
+    trigger:'Daily 13:00 BST', next:'Today 13:00',
+    cron:'0 13 * * *',
+    last:'Yesterday 13:00',
+    output:'All 29 agents operational. RYD Vercel deployment: healthy. Document Hub: 74/74 docs indexed. PROBE sign-off queue: 0 items.',
+    desc:'Full system health check across all 29 agents, deployed products, Vercel endpoints, and Supabase connections. Any anomalies flagged to GRID and escalated to Founder.',
+  },
+  issue: {
+    name:'Issue Triage', agent:'GRID', status:'live',
+    trigger:'Weekdays 16:30 BST', next:'Tomorrow 16:30',
+    cron:'30 16 * * 1-5',
+    last:'Yesterday 16:30',
+    output:'0 critical issues. 2 low-priority items queued. RYD Section H glossary: Nathan reply still pending (Day 8).',
+    desc:'End-of-day issues sweep: reviews open blockers, escalates stale items, logs unresolved dependencies. GRID owns all issue tracking and escalation paths.',
+  },
+  cii: {
+    name:'CII World Scan', agent:'SCOUT', status:'live',
+    trigger:'Daily 10:30 BST', next:'Tomorrow 10:30',
+    cron:'30 10 * * *',
+    last:'Today 10:31',
+    output:'CII alerts: Nigeria +2 (watch), Sudan +1 (watch). AI regulatory news: 3 items. Competitor signal: 1 new AI agent platform launched.',
+    desc:'Country Instability Index scan across 49 WorldMonitor layers. Competitor intelligence, regulatory shifts, and AI market signals. Output delivered to SCOUT intelligence report.',
+  },
+  content: {
+    name:'Content Batch', agent:'PULSE', status:'paused',
+    trigger:'Mondays 09:00 BST', next:'Paused — resume Monday',
+    cron:'0 9 * * 1',
+    last:'21 Apr 2026',
+    output:'Paused pending PULSE social media automation app launch. Will resume once LinkedIn + X scheduling is live.',
+    desc:'Weekly content batch generation: 7-day content calendar, carousel drafts, LinkedIn posts, email newsletter draft. Delivered to Founder for approval before scheduling.',
+  },
+  financial: {
+    name:'Financial Snapshot', agent:'LEDGER', status:'live',
+    trigger:'Daily 08:00 BST', next:'Tomorrow 08:00',
+    cron:'0 8 * * *',
+    last:'Today 08:00',
+    output:'MRR: tracking to £856K ARR target. Cash position: healthy. 2 invoices outstanding. Q2 forecast: on track.',
+    desc:'Daily financial intelligence brief: MRR, cash position, outstanding invoices, ARR tracking vs £856K Year 1 target. LEDGER synthesises Stripe + Xero data into executive summary.',
+  },
+  pr: {
+    name:'PR Digest', agent:'RELAY', status:'live',
+    trigger:'Weekdays 19:00 BST', next:'Today 19:00',
+    cron:'0 19 * * 1-5',
+    last:'Yesterday 19:02',
+    output:'Press mentions: 0. LinkedIn engagement: 3 new connections, 1 DM reply from inbound lead. ECHO: 4 DM conversations active.',
+    desc:'End-of-day PR and comms digest: press mentions, social engagement summary, active ECHO DM conversations, and inbound lead status. RELAY owns all comms tracking.',
+  },
+};
+
+function showRoutine(key, clickedEl) {
+  if(clickedEl) {
+    document.querySelectorAll('.rt-item').forEach(e=>e.classList.remove('active'));
+    clickedEl.classList.add('active');
+  }
+  const r = ROUTINES[key];
+  if(!r) return;
+  const statusBadge = r.status === 'live'
+    ? `<span class="rt-live-badge">● ACTIVE</span>`
+    : `<span class="rt-paused-badge">⏸ PAUSED</span>`;
+  const cronParts = r.cron.split(' ');
+  document.getElementById('rt-detail').innerHTML = `
+    <div class="rt-detail-header">
+      <div>
+        <div class="rt-detail-name">${r.name} &nbsp;${statusBadge}</div>
+        <div class="rt-trigger-sub">${r.trigger} — Agent: ${r.agent}</div>
+      </div>
+      <div class="rt-detail-actions">
+        <button class="tb-btn tb-btn-secondary" onclick="alert('Routine paused/resumed')">Pause</button>
+        <button class="tb-btn tb-btn-primary" onclick="alert('Routine triggered manually — ${r.agent} executing now')">Run now</button>
+      </div>
+    </div>
+
+    <div class="rt-output-box">
+      <div class="rt-output-label">Last Output — ${r.last}</div>
+      <div class="rt-output-text">${r.output}</div>
+    </div>
+
+    <div class="rt-desc-box">${r.desc}</div>
+
+    <div class="rt-meta-grid">
+      <div class="rt-meta-card">
+        <div class="rt-meta-label">Next Run</div>
+        <div class="rt-meta-value">${r.next}</div>
+      </div>
+      <div class="rt-meta-card">
+        <div class="rt-meta-label">Agent</div>
+        <div class="rt-meta-value">${r.agent}</div>
+      </div>
+      <div class="rt-meta-card">
+        <div class="rt-meta-label">Trigger</div>
+        <div class="rt-meta-value">${r.trigger}</div>
+      </div>
+      <div class="rt-meta-card">
+        <div class="rt-meta-label">Status</div>
+        <div class="rt-meta-value" style="color:${r.status==='live'?'#166534':'#92400e'}">${r.status.toUpperCase()}</div>
+      </div>
+    </div>
+
+    <div class="rt-cron-box">
+      <div class="rt-cron-title">Cron Expression — Edit Schedule</div>
+      <div class="rt-cron-row">
+        <div class="rt-cron-field"><label>MINUTE</label><input value="${cronParts[0]}" id="cron-min"></div>
+        <div class="rt-cron-field"><label>HOUR</label><input value="${cronParts[1]}" id="cron-hr"></div>
+        <div class="rt-cron-field"><label>DAY</label><input value="${cronParts[2]}" id="cron-day"></div>
+        <div class="rt-cron-field"><label>MONTH</label><input value="${cronParts[3]}" id="cron-mon"></div>
+        <div class="rt-cron-field"><label>WEEKDAY</label><input value="${cronParts[4]}" id="cron-wd"></div>
+        <button class="tb-btn tb-btn-secondary" style="margin-top:14px;flex-shrink:0" onclick="alert('Cron schedule saved: '+[document.getElementById('cron-min').value,document.getElementById('cron-hr').value,document.getElementById('cron-day').value,document.getElementById('cron-mon').value,document.getElementById('cron-wd').value].join(' '))">Save</button>
+      </div>
+    </div>
+
+    <div class="rt-api-box">
+      <div class="rt-api-label">API · Trigger via Webhook or Cron</div>
+      <div class="rt-api-code">
+        <span># Trigger routine via API</span><br>
+        POST /api/routines/<span>${key}</span>/trigger<br>
+        Authorization: Bearer <span>YOUR_API_KEY</span><br><br>
+        <span># Or use cron job (server-side)</span><br>
+        cron("${r.cron}", () => triggerRoutine("<span>${key}</span>"))<br><br>
+        <span># Webhook endpoint for external triggers</span><br>
+        https://phoennixai.app/webhooks/routines/<span>${key}</span>
+      </div>
+    </div>
+  `;
+}
+
+/* ── MODEL SELECTOR ── */
+function toggleModelDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('model-dropdown').classList.toggle('open');
+}
+function selectModel(key, label, dotColor, el) {
+  document.getElementById('model-label').textContent = label;
+  document.getElementById('model-dot').style.background = dotColor;
+  document.querySelectorAll('.model-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('model-dropdown').classList.remove('open');
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('model-dropdown');
+  if(dd) dd.classList.remove('open');
+});
+
+
+
+/* ── SEARCH ── */
+function filterDocs(q) {
+  renderDocs(currentSection, q.toLowerCase());
+}
+
+/* ── AGENTS ── */
+function renderAgents(filter) {
+  const tbody = document.getElementById('agent-tbody');
+  const list = filter === 'all' ? AGENTS : AGENTS.filter(function(a){ return a.status === filter; });
+  const tiers = ['CORE','INTELLIGENCE','BUILD','COMPANIONS','ORCHESTRATION','SPECIALIST'];
+  const tierColors = {
+    'CORE':'#FF6B2B','INTELLIGENCE':'#1E90FF','BUILD':'#00C875',
+    'COMPANIONS':'#9D4EDD','ORCHESTRATION':'#FFD700','SPECIALIST':'#0AFFFF'
+  };
+  const tierDesc = {
+    'CORE':'Strategic leadership — strategy, delivery, documents, finance, PA',
+    'INTELLIGENCE':'Intelligence engine — finance, comms, research, market, content',
+    'BUILD':'Production floor — engineering, QA, product, data, community',
+    'COMPANIONS':'Human layer — Snowy tiger cub and student companions',
+    'ORCHESTRATION':'Nervous system — tools, frameworks, routing agents',
+    'SPECIALIST':'Specialist capability — code review, marketing, animation, security'
+  };
+  let html = '';
+  let lastTier = '';
+  list.forEach(function(a) {
+    if(a.tier !== lastTier && filter === 'all') {
+      lastTier = a.tier;
+      html += '<tr><td colspan="5" style="padding:10px 12px 5px;font-family:var(--mono);font-size:8px;letter-spacing:2px;color:' + tierColors[a.tier] + ';border-bottom:1px solid ' + tierColors[a.tier] + '33;background:' + tierColors[a.tier] + '08;">' + a.tier + ' &mdash; ' + tierDesc[a.tier] + '</td></tr>';
+    }
+    html += '<tr>' +
+      '<td><div class="td-agent"><div class="agent-init" style="background:' + a.color + '">' + a.init + '</div>' +
+      '<div><div class="td-name">' + a.name + '</div><div class="td-sub">' + a.tier + '</div></div></div></td>' +
+      '<td style="font-family:var(--mono);font-size:11px">' + a.role + '</td>' +
+      '<td><span class="td-pill pill-' + a.status + '">' + a.status.toUpperCase() + '</span></td>' +
+      '<td style="font-family:var(--mono);font-size:12px">' + a.docs + '</td>' +
+      '<td style="font-family:var(--mono);font-size:11px;color:var(--ink4)">' + a.last + '</td>' +
+      '</tr>';
+  });
+  tbody.innerHTML = html;
+}
+
+function filterAgents(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.at-filt-btn').forEach(function(b){ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  renderAgents(f);
+}
+
+/* ── MODALS ── */
+function openDocModal(d) {
+  document.getElementById('m-type').textContent = d.type + ' DOCUMENT';
+  document.getElementById('m-title').textContent = d.title;
+  document.getElementById('m-desc').textContent = d.desc;
+  document.getElementById('m-status').textContent = STATUS_LABELS[d.status];
+  document.getElementById('m-owner').textContent = d.agent;
+  document.getElementById('m-ver').textContent = d.ver;
+  document.getElementById('m-date').textContent = d.date;
+  document.getElementById('m-class').textContent = d.cls;
+  document.getElementById('m-words').textContent = d.words + ' words';
+  document.getElementById('doc-modal').classList.add('open');
+}
+
+function showUpload() { document.getElementById('upload-modal').classList.add('open'); }
+function showNewDoc() { showUpload(); }
+function showKBModal(k) { /* future */ }
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') document.querySelectorAll('.modal-backdrop.open').forEach(m=>m.classList.remove('open')); });
+
+/* ── CSS ANIMATION ── */
+const style = document.createElement('style');
+style.textContent = '@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }';
+document.head.appendChild(style);
+
+init();
+
+/* ── CONSOLE PANEL ── */
+const CON_MSGS = [
+  {type:'ok',   time:'07:00', src:'KAIROS', msg:'Morning Brief delivered to Valerie — 6 priority items, 2 agent alerts, financial snapshot attached.'},
+  {type:'ok',   time:'08:14', src:'GRID',   msg:'Mission Control v3.1 sync complete. 29 agents registered. All BOS documents indexed.'},
+  {type:'ok',   time:'08:15', src:'SCRIBE', msg:'Document Hub initialised. 74 documents loaded across 11 sections. Duplicate check passed.'},
+  {type:'info', time:'08:16', src:'NEXUS',  msg:'RYD Phase 1 upload interface deployed to ryd-client-app-ashy.vercel.app — awaiting Nathan document upload.'},
+  {type:'warn', time:'08:17', src:'PROBE',  msg:'3 documents in DOS · Documentation require Founder sign-off before agent knowledge base activation.'},
+  {type:'warn', time:'08:18', src:'LEDGER', msg:'Revenue Architecture v0.8 is in DRAFT. FOS section will show incomplete data until approved.'},
+  {type:'info', time:'08:19', src:'PULSE',  msg:'VANTAGE brand system v1.0 committed. Navy + amber palette registered as RYD client identity.'},
+  {type:'ok',   time:'08:20', src:'RELAY',  msg:'Nathan Mather — RYD onboarding email queued. Awaiting document confirmation reply.'},
+  {type:'info', time:'08:21', src:'SAGE',   msg:'Wealth Creation 2026 research framework loaded — awaiting Valerie activation signal.'},
+  {type:'warn', time:'08:22', src:'KAIROS', msg:'Phantom Gaming Studio colour palette unassigned. Brand entry marked draft until new colour confirmed.'},
+];
+
+let conFilter = 'all';
+let conVisible = [...CON_MSGS];
+
+function renderConsole() {
+  const body = document.getElementById('console-body');
+  if (!body) return;
+  const filtered = conFilter === 'all' ? conVisible : conVisible.filter(function(m){ return m.type === conFilter; });
+  
+  // Clear existing rows
+  body.innerHTML = '';
+  
+  if (filtered.length === 0) {
+    body.innerHTML = '<div class="console-empty">No messages</div>';
+  } else {
+    filtered.forEach(function(m) {
+      const icon = m.type==='ok' ? '✓' : m.type==='warn' ? '⚠' : m.type==='error' ? '✕' : '→';
+      const row = document.createElement('div');
+      row.className = 'con-row con-' + m.type;
+      row.innerHTML = '<span class="con-time">' + m.time + '</span>' +
+        '<span class="con-icon">' + icon + '</span>' +
+        '<span class="con-msg"><strong style="color:rgba(255,255,255,.55);font-weight:500">[' + m.src + ']</strong> ' + m.msg + '</span>';
+      body.appendChild(row);
+    });
+  }
+  
+  // Update badge counts
+  const errors = conVisible.filter(function(m){return m.type==='error';}).length;
+  const warns  = conVisible.filter(function(m){return m.type==='warn';}).length;
+  const infos  = conVisible.filter(function(m){return m.type==='info'||m.type==='ok';}).length;
+  var ec = document.getElementById('con-err-count');
+  var wc = document.getElementById('con-warn-count');
+  var ic = document.getElementById('con-info-count');
+  if(ec) ec.textContent  = errors + (errors===1 ? ' error' : ' errors');
+  if(wc) wc.textContent  = warns  + (warns===1  ? ' warning' : ' warnings');
+  if(ic) ic.textContent  = infos  + (infos===1  ? ' message' : ' messages');
+  
+  // Pulse dot colour
+  var dot = document.getElementById('con-dot');
+  if(dot) dot.style.background = errors ? '#ef4444' : warns ? '#f59e0b' : 'var(--olive)';
+}
+
+function toggleConsole() {
+  document.getElementById('console-panel').classList.toggle('expanded');
+  document.body.classList.toggle('console-open');
+  // Scroll to bottom of body when opened
+  setTimeout(() => {
+    const b = document.getElementById('console-body');
+    b.scrollTop = b.scrollHeight;
+  }, 260);
+}
+
+function filterConsole(f) {
+  conFilter = f;
+  renderConsole();
+}
+
+function clearConsole() {
+  conVisible = [];
+  renderConsole();
+}
+
+// Add a log function so future JS can push real messages
+function conLog(type, src, msg) {
+  const now = new Date();
+  const t = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  conVisible.push({type, time:t, src, msg});
+  renderConsole();
+}
+
+renderConsole();
+
+</script>
+
+<!-- ── CONSOLE PANEL ── -->
+<div class="console-panel" id="console-panel">
+  <div class="console-header" onclick="toggleConsole()">
+    <div class="console-dot" id="con-dot"></div>
+    <span class="console-label">System Console</span>
+    <div class="console-counts">
+      <span class="cc-badge cc-error" id="con-err-count">0 errors</span>
+      <span class="cc-badge cc-warn"  id="con-warn-count">0 warnings</span>
+      <span class="cc-badge cc-info"  id="con-info-count">0 messages</span>
+    </div>
+    <div class="console-spacer"></div>
+    <div class="console-actions" onclick="event.stopPropagation()">
+      <button class="con-btn" onclick="filterConsole('all')">ALL</button>
+      <button class="con-btn" onclick="filterConsole('error')">ERRORS</button>
+      <button class="con-btn" onclick="filterConsole('warn')">WARN</button>
+      <button class="con-btn clear-btn" onclick="clearConsole()">CLEAR</button>
+    </div>
+    <div class="console-chevron">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M2 3.5L5 6.5L8 3.5"/>
+      </svg>
+    </div>
+  </div>
+  <div class="console-body" id="console-body">
+    
+  </div>
+</div>
+
+</body>
+</html>
