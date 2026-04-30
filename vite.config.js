@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  // Serve the self-contained index.html directly.
-  // No bundling needed — React and GSAP are loaded from CDN inside the file.
+  plugins: [react()],
   root: '.',
   build: {
     outDir: 'dist'
