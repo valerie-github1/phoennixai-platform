@@ -1082,21 +1082,21 @@ var Login = function Login(_ref3) {
         alignItems: 'center',
         gap: 10,
         margin: '.875rem 0',
-        color: '#6B7477',
+        color: '#37474F',
         fontSize: 12.5,
-        fontWeight: 500
+        fontWeight: 600
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
         height: 1,
-        background: 'rgba(85,105,112,.18)'
+        background: 'rgba(55,71,79,.3)'
       }
     }), "or", /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
         height: 1,
-        background: 'rgba(85,105,112,.18)'
+        background: 'rgba(55,71,79,.3)'
       }
     }));
   };
@@ -1147,9 +1147,9 @@ var Login = function Login(_ref3) {
       margin: '1rem',
       padding: '2.5rem 2.25rem',
       background: '#fff',
-      border: '1px solid rgba(85,105,112,.15)',
+      border: '1.5px solid rgba(55,71,79,.35)',
       borderRadius: 16,
-      boxShadow: '0 20px 60px rgba(85,105,112,.12)'
+      boxShadow: '0 8px 32px rgba(38,50,56,.18), 0 32px 80px rgba(38,50,56,.22)'
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "login-el",
@@ -1164,19 +1164,20 @@ var Login = function Login(_ref3) {
     size: 72
   }), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 22,
-      fontWeight: 700,
+      fontSize: 24,
+      fontWeight: 800,
       letterSpacing: '-.3px',
-      color: '#0F1618'
+      color: '#0a0f10'
     }
   }, /*#__PURE__*/React.createElement("span", {
     className: "grad-text"
   }, "Phoenn"), "ixAI"), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 13,
-      color: '#3A4347',
+      fontSize: 13.5,
+      color: '#1F2B30',
       textAlign: 'center',
-      lineHeight: 1.6
+      lineHeight: 1.6,
+      fontWeight: 500
     }
   }, "AGI-level agent orchestration platform", /*#__PURE__*/React.createElement("br", null), "for founders who build at scale")), /*#__PURE__*/React.createElement("div", {
     className: "login-el",
@@ -1202,13 +1203,13 @@ var Login = function Login(_ref3) {
       },
       style: {
         width: '100%',
-        background: hovered === k ? 'rgba(85,105,112,.06)' : '#fff',
-        border: '1px solid ' + (hovered === k ? 'rgba(85,105,112,.4)' : 'rgba(85,105,112,.2)'),
+        background: hovered === k ? 'rgba(55,71,79,.07)' : 'rgba(245,246,247,1)',
+        border: '1.5px solid ' + (hovered === k ? 'rgba(38,50,56,.55)' : 'rgba(55,71,79,.32)'),
         borderRadius: 10,
         padding: '.75rem 1rem',
         color: '#0F1618',
         fontSize: 13.5,
-        fontWeight: 500,
+        fontWeight: 600,
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
@@ -1217,7 +1218,7 @@ var Login = function Login(_ref3) {
         fontFamily: 'Source Serif 4,serif',
         transition: 'all .18s',
         transform: hovered === k ? 'translateY(-1px)' : 'none',
-        boxShadow: hovered === k ? '0 4px 12px rgba(85,105,112,.12)' : 'none'
+        boxShadow: hovered === k ? '0 6px 20px rgba(38,50,56,.18)' : '0 1px 3px rgba(38,50,56,.08)'
       }
     }, /*#__PURE__*/React.createElement(LogoComp, null), " Continue with ", lbl);
   })), /*#__PURE__*/React.createElement(Sep, null), /*#__PURE__*/React.createElement("div", {
@@ -1228,8 +1229,8 @@ var Login = function Login(_ref3) {
   }, /*#__PURE__*/React.createElement("label", {
     style: {
       fontSize: 12.5,
-      fontWeight: 600,
-      color: '#3A4347',
+      fontWeight: 700,
+      color: '#1F2B30',
       display: 'block',
       marginBottom: 5
     }
@@ -1245,7 +1246,7 @@ var Login = function Login(_ref3) {
       return e.key === 'Enter' && go();
     },
     style: {
-      color: '#0F1618',
+      color: '#0a0f10',
       fontWeight: 500
     }
   })), /*#__PURE__*/React.createElement("div", {
@@ -1256,8 +1257,8 @@ var Login = function Login(_ref3) {
   }, /*#__PURE__*/React.createElement("label", {
     style: {
       fontSize: 12.5,
-      fontWeight: 600,
-      color: '#3A4347',
+      fontWeight: 700,
+      color: '#1F2B30',
       display: 'block',
       marginBottom: 5
     }
@@ -1279,22 +1280,24 @@ var Login = function Login(_ref3) {
       width: '100%',
       borderRadius: 10,
       padding: '.8rem',
-      fontSize: 14.5,
-      fontWeight: 700
+      fontSize: 15,
+      fontWeight: 800,
+      letterSpacing: '.01em'
     }
   }, "Sign in to PhoennixAI"), /*#__PURE__*/React.createElement("p", {
     className: "login-el",
     style: {
       fontSize: 12.5,
-      color: '#6B7477',
+      color: '#37474F',
       textAlign: 'center',
-      marginTop: '.875rem'
+      marginTop: '.875rem',
+      fontWeight: 500
     }
   }, "No account? ", /*#__PURE__*/React.createElement("span", {
     style: {
-      color: '#556970',
+      color: '#263238',
       cursor: 'pointer',
-      fontWeight: 600
+      fontWeight: 700
     },
     onClick: function onClick() {
       return toast('Contact support@phoennixai.com');
