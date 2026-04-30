@@ -1,5 +1,4 @@
-`markdown name=README.md
-# phoennixai-platform
+phoennixai-platform
 
 Static, single-file HTML dashboards for the **PhoennixAI Platform** — a React + GSAP UI prototype that visualizes the PhoennixAI ecosystem (agents, routines, skills, and connectors).
 
