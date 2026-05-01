@@ -6,17 +6,18 @@
     { "source": "/api/:path*", "destination": "/api/:path*" }
   ],
   "functions": {
-    "api/*.js": {
+    "api/**/*.js": {
       "maxDuration": 60
     }
   },
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" }
-      ]
-    }
+  "crons": [
+    { "path": "/api/cron?routine=morning-brief",   "schedule": "0 7 * * *"   },
+    { "path": "/api/cron?routine=ledger-snapshot", "schedule": "0 8 * * 1-5" },
+    { "path": "/api/cron?routine=cii-scan",        "schedule": "30 10 * * *" },
+    { "path": "/api/cron?routine=system-health",   "schedule": "0 13 * * *"  },
+    { "path": "/api/cron?routine=email-triage",    "schedule": "0 16 * * *"  },
+    { "path": "/api/cron?routine=issue-triage",    "schedule": "30 16 * * *" },
+    { "path": "/api/cron?routine=pr-digest",       "schedule": "0 19 * * *"  },
+    { "path": "/api/cron?routine=content-batch",   "schedule": "0 9 * * 1"   }
   ]
 }

@@ -38,8 +38,9 @@ SHARED CONTEXT — Always hold:
 - Always end outputs with a clear next action.`;
 
 export default async function handler(req, res) {
-  // CORS headers — allow your deployed domain + localhost dev
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS headers — allow deployed domain (override with ALLOWED_ORIGIN env var)
+  const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://phoennixai-platform.vercel.app';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Routine-Key');
 
@@ -54,6 +55,10 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured on server' });
+  }
+
+  if (!req.body) {
+    return res.status(400).json({ error: 'Request body is required' });
   }
 
   try {
