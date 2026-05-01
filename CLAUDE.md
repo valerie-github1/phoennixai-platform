@@ -10,8 +10,37 @@
 **Product:** PhoennixPro (commercial name) | Brand: **PhoennixAI** (always double-N — non-negotiable)
 **Founder / CEO:** Valerie Wilcox
 **Tagline:** "Created to Create. Intelligent by nature."
-**Palette:** Midnight `#0F0F1A` · Purple `#6B4FBB` · Fire `#FF6B2B` · Amber `#E8B86D` · Electric Cyan `#00E5FF`
-**Typography:** Clash Display (headings) · Inter (body) · JetBrains Mono (code)
+**Palette (v1.3 — PhoennixAI_BrandSystem_v1_3):**
+
+| Token | Hex | Role |
+|---|---|---|
+| Slate | `#556970` | Primary · Active states |
+| Slate Dark | `#3E4F55` | Hover · Deep accents |
+| Slate Light | `#7A9098` | Secondary text · Muted |
+| Olive | `#ABA944` | Accent · Highlights · Badges |
+| Olive Dark | `#8A8835` | Olive hover · Links |
+| Olive Light | `#C9C877` | Pale accent fills |
+| Off-White | `#F7F6F2` | Page background |
+| White | `#FFFFFF` | Cards · Sidebar · Panels |
+| Fog | `#EFF0EA` | Hover fills |
+| Stone | `#D6D5C8` | Dividers · Scrollbars |
+| Ink | `#1F2426` | Primary text |
+| Ink 2 | `#3D4447` | Secondary text |
+| Ink 3 | `#6B7477` | Muted / captions |
+| Ink 4 | `#9BA4A7` | Placeholders · Hints |
+| Phoenix Blue | `#1E90FF` | Logo fill · Icon only |
+| Phoenix Cyan | `#00BFFF` | Logo glow · Eye mark |
+| Logo Dark BG | `#0D1520` | Logo background only |
+
+> **Colour rules:** The phoenix logo uses Phoenix Blue (`#1E90FF`) exclusively — always on Logo Dark BG (`#0D1520`). Olive marks **ix** in the wordmark only. Never use orange as a primary PhoennixAI brand colour.
+
+**Typography (v1.3):**
+
+| Font | Usage |
+|---|---|
+| Agdasima | H1 · H2 · H3 · Wordmark · KPI numbers · Section labels |
+| Source Serif 4 | Body copy · Descriptions · Cards · Paragraphs |
+| Fira Code | Labels · Tags · IDs · Code · Metadata · Status badges |
 
 Every output: investor-grade documents, production-ready code, defensible recommendations.
 THE STANDARD IS NOT GOOD. THE STANDARD IS THE BEST IN THE WORLD.
