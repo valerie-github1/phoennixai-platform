@@ -1313,7 +1313,7 @@ var Sidebar = function Sidebar(_ref6) {
     user = _ref6.user,
     sidebarOpen = _ref6.sidebarOpen,
     setSidebarOpen = _ref6.setSidebarOpen;
-  var nav = [['home', '⊕', 'New chat'], ['search', '◎', 'Search'], ['agents', '◉', 'Agents'], ['chat', '◎', 'Agent Chat'], ['routines', '⚡', 'Routines'], ['code', '⧉', 'Code'], ['design', '◈', 'Design'], ['client', '▣', 'Client Data'], ['projects', '◫', 'Projects'], ['apikeys', '🔑', 'API Keys'], ['desktop', '⊙', 'Desktop App'], ['customize', '⊛', 'Customize'], ['manual', '?', 'User Manual']];
+  var nav = [['home', '⊕', 'New chat'], ['search', '◎', 'Search'], ['agents', '◉', 'Agents'], ['chat', '◎', 'Agent Chat'], ['routines', '⚡', 'Routines'], ['code', '⧉', 'Code'], ['design', '◈', 'Design'], ['client', '▣', 'Client Data'], ['projects', '◫', 'Projects'], ['desktop', '⊙', 'Desktop App'], ['customize', '⊛', 'Customize'], ['manual', '?', 'User Manual']];
   return /*#__PURE__*/React.createElement("div", {
     id: "sidebar",
     style: {
@@ -3046,7 +3046,7 @@ var AgentChat = function AgentChat(_ref10) {
       color: 'var(--t3)',
       lineHeight: '26px'
     }
-  }, "Model: ", ((_window$__phoennixCon3 = window.__phoennixConfig) === null || _window$__phoennixCon3 === void 0 ? void 0 : _window$__phoennixCon3.model) === 'claude-opus-4-20250514' ? 'Opus 4.6' : 'Sonnet 4.6', " \xB7 ", /*#__PURE__*/React.createElement("button", {
+  }, "Model: ", (function(){var _m=(window.__phoennixConfig||{}).model||'grok-3';return _m==='grok-3'?'Grok 3':_m==='grok-3-mini'?'Grok 3 Mini':_m==='claude-opus-4-20250514'?'Claude Opus 4.6':_m==='claude-sonnet-4-20250514'?'Claude Sonnet 4.6':'Claude Haiku 4.5';})(), " \xB7 ", /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return toast('Change model in Customize → API Config');
     },
@@ -3376,21 +3376,21 @@ var Routines = function Routines() {
       fontFamily: 'Fira Code,monospace',
       marginBottom: 6
     }
-  }, "STEP 1 \u2014 Get your Anthropic API key"), /*#__PURE__*/React.createElement("p", {
+  }, "STEP 1 \u2014 Get your AI provider API key"), /*#__PURE__*/React.createElement("p", {
     style: {
       fontSize: 13,
       color: 'var(--t2)',
       lineHeight: 1.7,
       marginBottom: 8
     }
-  }, "Go to ", /*#__PURE__*/React.createElement("strong", null, "console.anthropic.com"), " \u2192 sign in \u2192 API Keys (left sidebar) \u2192 Create Key. It starts with ", /*#__PURE__*/React.createElement("code", {
+  }, "For Grok: go to ", /*#__PURE__*/React.createElement("strong", null, "console.x.ai"), " \u2192 sign in \u2192 API Keys \u2192 Create key. For Claude: go to ", /*#__PURE__*/React.createElement("strong", null, "console.anthropic.com"), " \u2192 API Keys. Copy the key immediately \u2014 you only see it once. Add it to your Vercel project as ", /*#__PURE__*/React.createElement("code", {
     style: {
       background: 'rgba(85,105,112,.1)',
       padding: '1px 5px',
       borderRadius: 4,
       fontSize: 11
     }
-  }, "sk-ant-api03-"), ". Copy it immediately \u2014 you only see it once.")), /*#__PURE__*/React.createElement("div", {
+  }, "AI_API_KEY"), ".")), /*#__PURE__*/React.createElement("div", {
     style: {
       background: 'rgba(85,105,112,.05)',
       border: '.5px solid rgba(85,105,112,.18)',
@@ -3426,7 +3426,7 @@ var Routines = function Routines() {
       borderRadius: 4,
       fontSize: 11
     }
-  }, "api/claude.js"), " (download above)"), /*#__PURE__*/React.createElement("div", null, "3. Add file: ", /*#__PURE__*/React.createElement("code", {
+  }, "api/ai.js"), " (download above)"), /*#__PURE__*/React.createElement("div", null, "3. Add file: ", /*#__PURE__*/React.createElement("code", {
     style: {
       background: 'rgba(85,105,112,.1)',
       padding: '1px 5px',
@@ -3477,7 +3477,7 @@ var Routines = function Routines() {
     style: {
       color: '#ABA944'
     }
-  }, "ANTHROPIC_API_KEY"), "  =  sk-ant-api03-..."), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
+  }, "AI_API_KEY"), "         =  your-provider-api-key"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("span", {
     style: {
       color: '#ABA944'
     }
@@ -4632,7 +4632,7 @@ var ConnectorsPanel = function ConnectorsPanel(_ref27) {
         if (['Vercel', 'Supabase', 'Stripe'].includes(cn.n)) {
           if (setPanel) setPanel('api');
           toast('Add ' + cn.n + ' credentials in API Config above');
-        } else toast('OAuth for ' + cn.n + ': go to console.anthropic.com or the platform directly, get an API token, then add it in API Config');
+        } else toast('OAuth for ' + cn.n + ': go to the provider\u2019s developer console, create an API token, then add it in API Config');
       },
       style: {
         width: '100%',
@@ -4700,7 +4700,7 @@ var Customize = function Customize() {
         routineSecret: ((_window$__phoennixCon0 = window.__phoennixConfig) === null || _window$__phoennixCon0 === void 0 ? void 0 : _window$__phoennixCon0.routineSecret) || '',
         supabaseUrl: ((_window$__phoennixCon1 = window.__phoennixConfig) === null || _window$__phoennixCon1 === void 0 ? void 0 : _window$__phoennixCon1.supabaseUrl) || '',
         supabaseKey: ((_window$__phoennixCon10 = window.__phoennixConfig) === null || _window$__phoennixCon10 === void 0 ? void 0 : _window$__phoennixCon10.supabaseKey) || '',
-        model: ((_window$__phoennixCon11 = window.__phoennixConfig) === null || _window$__phoennixCon11 === void 0 ? void 0 : _window$__phoennixCon11.model) || 'claude-sonnet-4-20250514'
+        model: ((_window$__phoennixCon11 = window.__phoennixConfig) === null || _window$__phoennixCon11 === void 0 ? void 0 : _window$__phoennixCon11.model) || 'grok-3'
       };
     }),
     _useState56 = _slicedToArray(_useState55, 2),
@@ -4737,7 +4737,7 @@ var Customize = function Customize() {
             return _context5.a(2);
           case 1:
             setApiStatus('testing');
-            setApiMsg('Connecting to CLAUDE...');
+            setApiMsg('Connecting to PhoennixAI...');
             _context5.p = 2;
             _context5.n = 3;
             return fetch(apiVals.endpoint, {
@@ -4750,7 +4750,7 @@ var Customize = function Customize() {
                   role: 'user',
                   content: 'Reply with exactly: PHOENNIXAI_CONNECTED'
                 }],
-                agentName: 'CLAUDE',
+                agentName: 'PhoennixAI',
                 model: apiVals.model
               })
             });
@@ -4765,7 +4765,7 @@ var Customize = function Customize() {
             }).join('')) || '';
             if (text.includes('PHOENNIXAI_CONNECTED') || res.ok) {
               setApiStatus('ok');
-              setApiMsg('Connected — CLAUDE is live ✓');
+              setApiMsg('Connected — PhoennixAI is live ✓');
               toast('API connected successfully');
             } else {
               setApiStatus('fail');
@@ -5042,7 +5042,7 @@ var Customize = function Customize() {
       }
     });
   };
-  var NAV_ITEMS = [['api', '⚙️', 'API Config'], ['crons', '⏱', 'Cron Jobs'], ['knowledge', '📚', 'Knowledge Base'], ['connectors', '🔗', 'Connectors'], ['skills', '🧠', 'Skills']];
+  var NAV_ITEMS = [['api', '⚙️', 'API Config'], ['crons', '⏱', 'Cron Jobs'], ['knowledge', '📚', 'Knowledge Base'], ['connectors', '🔗', 'Connectors'], ['skills', '🧠', 'Skills'], ['apikeys', '🔑', 'API Keys']];
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: 'flex',
@@ -5208,10 +5208,14 @@ var Customize = function Customize() {
       fontSize: 12
     }
   }, /*#__PURE__*/React.createElement("option", {
+    value: "grok-3"
+  }, "Grok 3 \u2014 Default (fast, balanced)"), /*#__PURE__*/React.createElement("option", {
+    value: "grok-3-mini"
+  }, "Grok 3 Mini \u2014 Lightweight (lowest cost)"), /*#__PURE__*/React.createElement("option", {
     value: "claude-sonnet-4-20250514"
-  }, "Claude Sonnet 4.6 \u2014 Default (fast, cost-efficient)"), /*#__PURE__*/React.createElement("option", {
+  }, "Claude Sonnet 4.6 \u2014 Fast, cost-efficient"), /*#__PURE__*/React.createElement("option", {
     value: "claude-opus-4-20250514"
-  }, "Claude Opus 4.6 \u2014 ULTRAPLAN (deep reasoning, 30-min budget)"), /*#__PURE__*/React.createElement("option", {
+  }, "Claude Opus 4.6 \u2014 Deep reasoning (30-min budget)"), /*#__PURE__*/React.createElement("option", {
     value: "claude-haiku-4-5-20251001"
   }, "Claude Haiku 4.5 \u2014 Fast tasks (lowest cost)"))), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5385,7 +5389,7 @@ var Customize = function Customize() {
       color: 'var(--t3)',
       marginBottom: '.75rem'
     }
-  }, "What each field does"), [['Vercel Endpoint', 'The URL of your deployed api/claude.js function. All agent chat and routine calls go here. Your API key lives in Vercel, not here.'], ['AI Model', 'Sonnet 4.6 for daily work. Switch to Opus 4.6 only for /plan commands — it costs 1.7× more per call.'], ['Routine Secret', 'The X-Routine-Key header that protects your cron endpoints from unauthorized triggers. Must match Vercel env var exactly.'], ['Supabase', 'Optional — enables agent memory persistence and routine audit logs across sessions. Highly recommended.']].map(function (_ref32) {
+  }, "What each field does"), [['Vercel Endpoint', 'The URL of your deployed api/ai.js function. All agent chat and routine calls go here. Your AI provider key lives in Vercel env vars, not here.'], ['AI Model', 'Grok 3 for daily work. Switch to a larger model only for deep-reasoning tasks — check your provider\u2019s pricing.'], ['Routine Secret', 'The X-Routine-Key header that protects your cron endpoints from unauthorized triggers. Must match Vercel env var exactly.'], ['Supabase', 'Optional — enables agent memory persistence and routine audit logs across sessions. Highly recommended.']].map(function (_ref32) {
     var _ref33 = _slicedToArray(_ref32, 2),
       k = _ref33[0],
       v = _ref33[1];
@@ -6152,7 +6156,14 @@ var Customize = function Customize() {
       color: 'var(--t2)',
       lineHeight: 1.75
     }
-  }, mySkills[ss].desc)))));
+  }, mySkills[ss].desc)))), panel === 'apikeys' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      overflowY: 'auto',
+      padding: '1.75rem',
+      maxWidth: 900
+    }
+  }, /*#__PURE__*/React.createElement(ApiKeys, null)));
 };
 
 /* ── USER MANUAL ── */
@@ -8642,7 +8653,7 @@ var App = function App() {
     openPreview: openPreview
   }), view === 'routines' && /*#__PURE__*/React.createElement(Routines, null), view === 'design' && /*#__PURE__*/React.createElement(Design, {
     openPreview: openPreview
-  }), view === 'client' && /*#__PURE__*/React.createElement(ClientData, null), view === 'apikeys' && /*#__PURE__*/React.createElement(ApiKeys, null), view === 'customize' && /*#__PURE__*/React.createElement(Customize, null), view === 'manual' && /*#__PURE__*/React.createElement(UserManual, null), view === 'code' && /*#__PURE__*/React.createElement(CodeView, {
+  }), view === 'client' && /*#__PURE__*/React.createElement(ClientData, null), view === 'customize' && /*#__PURE__*/React.createElement(Customize, null), view === 'manual' && /*#__PURE__*/React.createElement(UserManual, null), view === 'code' && /*#__PURE__*/React.createElement(CodeView, {
     openPreview: openPreview
   }), view === 'projects' && /*#__PURE__*/React.createElement(ProjectsView, null), view === 'desktop' && /*#__PURE__*/React.createElement(ComputerUsePanel, null))), /*#__PURE__*/React.createElement("button", {
     className: "split-toggle",

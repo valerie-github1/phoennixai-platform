@@ -55,6 +55,42 @@ async function sha256Hex(str) {
 }
 
 /* ─────────────────────────────────────────────
+   SUPABASE REST HELPERS  (no SDK needed)
+   Falls back to localStorage when Supabase is not configured.
+───────────────────────────────────────────── */
+function getSupabaseConfig() {
+  const cfg = window.__phoennixConfig || {};
+  if (cfg.supabaseUrl && cfg.supabaseKey) {
+    return { url: cfg.supabaseUrl.replace(/\/$/, ''), key: cfg.supabaseKey };
+  }
+  return null;
+}
+
+async function sbRequest(path, method = 'GET', body = null, extraHeaders = {}) {
+  const sb = getSupabaseConfig();
+  if (!sb) return null;
+  const headers = {
+    'Content-Type': 'application/json',
+    'apikey': sb.key,
+    'Authorization': `Bearer ${sb.key}`,
+    ...extraHeaders,
+  };
+  if (method === 'POST') headers['Prefer'] = 'return=representation';
+  try {
+    const res = await fetch(`${sb.url}/rest/v1/${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) return null;
+    if (method === 'GET' || method === 'POST') return res.json().catch(() => null);
+    return true;
+  } catch {
+    return null;
+  }
+}
+
+/* ─────────────────────────────────────────────
    STORAGE HELPERS
 ───────────────────────────────────────────── */
 function loadKeys() {
@@ -65,11 +101,29 @@ function loadKeys() {
   }
 }
 
+async function loadKeysAsync() {
+  const remote = await sbRequest('phx_api_keys?order=created_at.desc');
+  if (remote) return remote;
+  return loadKeys(); // localStorage fallback
+}
+
 function saveKeys(keys) {
   // Security note: raw API keys are NEVER stored. The stored objects contain only:
   // hashed_key (SHA-256, non-reversible), key_preview (first 12 + last 4 chars, masked),
   // metadata (name, scopes, tier, timestamps). This localStorage write is safe by design.
   localStorage.setItem(STORAGE_KEY, JSON.stringify(keys)); // lgtm[js/clear-text-storage-of-sensitive-data]
+}
+
+async function saveKeyRemote(key) {
+  return sbRequest('phx_api_keys', 'POST', key);
+}
+
+async function deleteKeyRemote(id) {
+  return sbRequest(`phx_api_keys?id=eq.${id}`, 'DELETE');
+}
+
+async function revokeKeyRemote(id) {
+  return sbRequest(`phx_api_keys?id=eq.${id}`, 'PATCH', { is_active: false }, { 'Prefer': 'return=minimal' });
 }
 
 function loadAudit() {
@@ -80,6 +134,12 @@ function loadAudit() {
   }
 }
 
+async function loadAuditAsync() {
+  const remote = await sbRequest('phx_audit_log?order=created_at.desc&limit=200');
+  if (remote) return remote;
+  return loadAudit();
+}
+
 function saveAudit(log) {
   // keep last 200 entries
   // Security note: audit log contains only event names (e.g. "created", "revoked"),
@@ -88,15 +148,18 @@ function saveAudit(log) {
 }
 
 function addAuditEntry(action, keyId, keyName, extra = '') {
-  const log = loadAudit();
-  log.unshift({
+  const entry = {
     id: Date.now(),
     ts: new Date().toISOString(),
     action,
     keyId,
     keyName,
     extra,
-  });
+  };
+  // Write to Supabase asynchronously (fire-and-forget); always write to localStorage as backup
+  sbRequest('phx_audit_log', 'POST', entry).catch(() => {});
+  const log = loadAudit();
+  log.unshift(entry);
   saveAudit(log);
 }
 
@@ -696,7 +759,13 @@ function MiddlewarePanel() {
    AUDIT LOG PANEL
 ───────────────────────────────────────────── */
 function AuditLogPanel() {
-  const log = loadAudit();
+  const [log, setLog] = useState(() => loadAudit());
+
+  useEffect(() => {
+    loadAuditAsync().then(entries => {
+      if (entries && entries.length > 0) setLog(entries);
+    });
+  }, []);
 
   if (log.length === 0) {
     return (
@@ -742,6 +811,7 @@ function AuditLogPanel() {
 ───────────────────────────────────────────── */
 export default function ApiKeys() {
   const [keys, setKeys] = useState(() => loadKeys());
+  const [loading, setLoading] = useState(!!getSupabaseConfig());
   const [activeTab, setActiveTab] = useState('keys');
   const [showCreate, setShowCreate] = useState(false);
   const [revealKey, setRevealKey] = useState(null); // { rawKey, keyName }
@@ -749,40 +819,51 @@ export default function ApiKeys() {
   const [toastMsg, setToastMsg] = useState('');
   const [copiedId, setCopiedId] = useState(null);
 
+  // Load keys from Supabase on mount if configured
+  useEffect(() => {
+    if (!getSupabaseConfig()) return;
+    setLoading(true);
+    loadKeysAsync().then(remote => {
+      if (remote) setKeys(remote);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, []);
+
   const showToast = useCallback((msg) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(''), 2800);
   }, []);
 
-  const persistKeys = (updated) => {
+  const persistKeys = async (updated, remoteOp) => {
     setKeys(updated);
-    saveKeys(updated);
+    saveKeys(updated); // always keep localStorage in sync as backup
+    if (remoteOp) await remoteOp().catch(() => {});
   };
 
-  const handleCreate = (newKey, rawKey) => {
+  const handleCreate = async (newKey, rawKey) => {
     const updated = [newKey, ...keys];
-    persistKeys(updated);
+    await persistKeys(updated, () => saveKeyRemote(newKey));
     addAuditEntry('created', newKey.id, newKey.name, `env:${newKey.env} tier:${newKey.rate_tier}`);
     setShowCreate(false);
     setRevealKey({ rawKey, keyName: newKey.name });
   };
 
-  const handleRevoke = (id) => {
+  const handleRevoke = async (id) => {
     const key = keys.find(k => k.id === id);
     if (!key) return;
     if (!window.confirm(`Revoke "${key.name}"? This cannot be undone.`)) return;
     const updated = keys.map(k => k.id === id ? { ...k, is_active: false } : k);
-    persistKeys(updated);
+    await persistKeys(updated, () => revokeKeyRemote(id));
     addAuditEntry('revoked', id, key.name);
     showToast(`"${key.name}" revoked`);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const key = keys.find(k => k.id === id);
     if (!key) return;
     if (!window.confirm(`Permanently delete "${key.name}"?`)) return;
     const updated = keys.filter(k => k.id !== id);
-    persistKeys(updated);
+    await persistKeys(updated, () => deleteKeyRemote(id));
     addAuditEntry('deleted', id, key.name);
     showToast(`"${key.name}" deleted`);
   };
@@ -834,6 +915,13 @@ export default function ApiKeys() {
           ⚡ New API Key
         </button>
       </div>
+
+      {/* Supabase loading indicator */}
+      {loading && (
+        <div style={{ fontSize: 12, color: 'var(--t3)', marginBottom: '1rem', fontFamily: 'Fira Code, monospace' }}>
+          ⟳ Syncing with Supabase…
+        </div>
+      )}
 
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 10, marginBottom: '1.5rem', flexWrap: 'wrap' }}>
