@@ -3046,7 +3046,7 @@ var AgentChat = function AgentChat(_ref10) {
       color: 'var(--t3)',
       lineHeight: '26px'
     }
-  }, "Model: ", (function(){var _m=(window.__phoennixConfig||{}).model||'grok-3';if(_m==='grok-3')return 'Grok 3';if(_m==='grok-3-mini')return 'Grok 3 Mini';if(_m==='claude-opus-4-20250514')return 'Claude Opus 4.6';if(_m==='claude-sonnet-4-20250514')return 'Claude Sonnet 4.6';if(_m==='claude-haiku-4-5-20251001')return 'Claude Haiku 4.5';if(_m.includes('deepseek-v4-pro'))return 'DeepSeek V4 Pro (NIM)';if(_m.includes('glm-5.1'))return 'GLM-5.1 (NIM)';if(_m.includes('minimax-m2.7'))return 'MiniMax M2.7 (NIM)';if(_m.includes('gemma-4-31b'))return 'Gemma 4 31B (NIM)';if(_m.includes('nemotron-3-super'))return 'Nemotron 120B (NIM)';return _m;})(), " \xB7 ", /*#__PURE__*/React.createElement("button", {
+  }, "Model: ", (function(){var _m=(window.__phoennixConfig||{}).model||'grok-3';if(_m==='grok-3')return 'Grok 3';if(_m==='grok-3-mini')return 'Grok 3 Mini';if(_m==='claude-opus-4-20250514')return 'Claude Opus 4.6';if(_m==='claude-sonnet-4-20250514')return 'Claude Sonnet 4.6';if(_m==='claude-haiku-4-5-20251001')return 'Claude Haiku 4.5';if(_m.includes('deepseek-v4-pro'))return 'DeepSeek V4 Pro (NIM)';if(_m.includes('glm-5.1'))return 'GLM-5.1 (NIM)';if(_m.includes('minimax-m2.7'))return 'MiniMax M2.7 (NIM)';if(_m.includes('gemma-4-31b'))return 'Gemma 4 31B (NIM)';if(_m.includes('qwen3-coder'))return 'Qwen3 Coder 480B (NIM)';return _m;})(), " \xB7 ", /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return toast('Change model in Customize → API Config');
     },
@@ -5228,8 +5228,8 @@ var Customize = function Customize() {
   }, "MiniMax M2.7 \u2014 230B, coding + office tasks \u2014 Free Endpoint (NIM)"), /*#__PURE__*/React.createElement("option", {
     value: "google/gemma-4-31b-it"
   }, "Gemma 4 31B \u2014 Frontier reasoning, agentic (NIM)"), /*#__PURE__*/React.createElement("option", {
-    value: "nvidia/nemotron-3-super-120b-a12b"
-  }, "Nemotron Super 120B \u2014 1M ctx, Mamba-Transformer, planning (NIM)")))), /*#__PURE__*/React.createElement("div", {
+    value: "qwen/qwen3-coder-480b-a35b-instruct"
+  }, "Qwen3 Coder 480B \u2014 256k ctx, best agentic coding \u2014 Free Endpoint (NIM)")))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: '1.25rem'
     }
