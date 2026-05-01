@@ -3046,7 +3046,7 @@ var AgentChat = function AgentChat(_ref10) {
       color: 'var(--t3)',
       lineHeight: '26px'
     }
-  }, "Model: ", (function(){var _m=(window.__phoennixConfig||{}).model||'grok-3';return _m==='grok-3'?'Grok 3':_m==='grok-3-mini'?'Grok 3 Mini':_m==='claude-opus-4-20250514'?'Claude Opus 4.6':_m==='claude-sonnet-4-20250514'?'Claude Sonnet 4.6':'Claude Haiku 4.5';})(), " \xB7 ", /*#__PURE__*/React.createElement("button", {
+  }, "Model: ", (function(){var _m=(window.__phoennixConfig||{}).model||'grok-3';if(_m==='grok-3')return 'Grok 3';if(_m==='grok-3-mini')return 'Grok 3 Mini';if(_m==='claude-opus-4-20250514')return 'Claude Opus 4.6';if(_m==='claude-sonnet-4-20250514')return 'Claude Sonnet 4.6';if(_m==='claude-haiku-4-5-20251001')return 'Claude Haiku 4.5';if(_m.includes('deepseek-v4-pro'))return 'DeepSeek V4 Pro (NIM)';if(_m.includes('glm-5.1'))return 'GLM-5.1 (NIM)';if(_m.includes('minimax-m2.7'))return 'MiniMax M2.7 (NIM)';if(_m.includes('gemma-4-31b'))return 'Gemma 4 31B (NIM)';if(_m.includes('nemotron-3-super'))return 'Nemotron 120B (NIM)';return _m;})(), " \xB7 ", /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return toast('Change model in Customize → API Config');
     },
@@ -5217,7 +5217,19 @@ var Customize = function Customize() {
     value: "claude-opus-4-20250514"
   }, "Claude Opus 4.6 \u2014 Deep reasoning (30-min budget)"), /*#__PURE__*/React.createElement("option", {
     value: "claude-haiku-4-5-20251001"
-  }, "Claude Haiku 4.5 \u2014 Fast tasks (lowest cost)"))), /*#__PURE__*/React.createElement("div", {
+  }, "Claude Haiku 4.5 \u2014 Fast tasks (lowest cost)"), /*#__PURE__*/React.createElement("optgroup", {
+    label: "\u2014 NVIDIA NIM (requires NVIDIA_API_KEY) \u2014"
+  }, /*#__PURE__*/React.createElement("option", {
+    value: "deepseek-ai/deepseek-v4-pro"
+  }, "DeepSeek V4 Pro \u2014 1M ctx, MoE, best for complex code (NIM)"), /*#__PURE__*/React.createElement("option", {
+    value: "zhipuai/glm-5.1"
+  }, "GLM-5.1 \u2014 Agentic workflows, long-horizon reasoning (NIM)"), /*#__PURE__*/React.createElement("option", {
+    value: "minimax/minimax-m2.7"
+  }, "MiniMax M2.7 \u2014 230B, coding + office tasks \u2014 Free Endpoint (NIM)"), /*#__PURE__*/React.createElement("option", {
+    value: "google/gemma-4-31b-it"
+  }, "Gemma 4 31B \u2014 Frontier reasoning, agentic (NIM)"), /*#__PURE__*/React.createElement("option", {
+    value: "nvidia/nemotron-3-super-120b-a12b"
+  }, "Nemotron Super 120B \u2014 1M ctx, Mamba-Transformer, planning (NIM)")))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginBottom: '1.25rem'
     }
