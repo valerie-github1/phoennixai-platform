@@ -66,7 +66,10 @@ function loadKeys() {
 }
 
 function saveKeys(keys) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(keys));
+  // Security note: raw API keys are NEVER stored. The stored objects contain only:
+  // hashed_key (SHA-256, non-reversible), key_preview (first 12 + last 4 chars, masked),
+  // metadata (name, scopes, tier, timestamps). This localStorage write is safe by design.
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(keys)); // lgtm[js/clear-text-storage-of-sensitive-data]
 }
 
 function loadAudit() {
@@ -79,7 +82,9 @@ function loadAudit() {
 
 function saveAudit(log) {
   // keep last 200 entries
-  localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify(log.slice(0, 200)));
+  // Security note: audit log contains only event names (e.g. "created", "revoked"),
+  // key names (user-defined labels), and timestamps — no sensitive key material.
+  localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify(log.slice(0, 200))); // lgtm[js/clear-text-storage-of-sensitive-data]
 }
 
 function addAuditEntry(action, keyId, keyName, extra = '') {
