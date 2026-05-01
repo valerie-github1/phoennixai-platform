@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ApiKeys from './ApiKeys';
 import gsap from 'gsap';
 
 "use strict";
@@ -1312,7 +1313,7 @@ var Sidebar = function Sidebar(_ref6) {
     user = _ref6.user,
     sidebarOpen = _ref6.sidebarOpen,
     setSidebarOpen = _ref6.setSidebarOpen;
-  var nav = [['home', '⊕', 'New chat'], ['search', '◎', 'Search'], ['agents', '◉', 'Agents'], ['chat', '◎', 'Agent Chat'], ['routines', '⚡', 'Routines'], ['code', '⧉', 'Code'], ['design', '◈', 'Design'], ['client', '▣', 'Client Data'], ['projects', '◫', 'Projects'], ['desktop', '⊙', 'Desktop App'], ['customize', '⊛', 'Customize'], ['manual', '?', 'User Manual']];
+  var nav = [['home', '⊕', 'New chat'], ['search', '◎', 'Search'], ['agents', '◉', 'Agents'], ['chat', '◎', 'Agent Chat'], ['routines', '⚡', 'Routines'], ['code', '⧉', 'Code'], ['design', '◈', 'Design'], ['client', '▣', 'Client Data'], ['projects', '◫', 'Projects'], ['apikeys', '🔑', 'API Keys'], ['desktop', '⊙', 'Desktop App'], ['customize', '⊛', 'Customize'], ['manual', '?', 'User Manual']];
   return /*#__PURE__*/React.createElement("div", {
     id: "sidebar",
     style: {
@@ -8641,7 +8642,7 @@ var App = function App() {
     openPreview: openPreview
   }), view === 'routines' && /*#__PURE__*/React.createElement(Routines, null), view === 'design' && /*#__PURE__*/React.createElement(Design, {
     openPreview: openPreview
-  }), view === 'client' && /*#__PURE__*/React.createElement(ClientData, null), view === 'customize' && /*#__PURE__*/React.createElement(Customize, null), view === 'manual' && /*#__PURE__*/React.createElement(UserManual, null), view === 'code' && /*#__PURE__*/React.createElement(CodeView, {
+  }), view === 'client' && /*#__PURE__*/React.createElement(ClientData, null), view === 'apikeys' && /*#__PURE__*/React.createElement(ApiKeys, null), view === 'customize' && /*#__PURE__*/React.createElement(Customize, null), view === 'manual' && /*#__PURE__*/React.createElement(UserManual, null), view === 'code' && /*#__PURE__*/React.createElement(CodeView, {
     openPreview: openPreview
   }), view === 'projects' && /*#__PURE__*/React.createElement(ProjectsView, null), view === 'desktop' && /*#__PURE__*/React.createElement(ComputerUsePanel, null))), /*#__PURE__*/React.createElement("button", {
     className: "split-toggle",
