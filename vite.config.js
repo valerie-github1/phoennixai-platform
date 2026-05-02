@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  root: '.',
   build: {
     outDir: 'dist',
     sourcemap: false,
@@ -16,8 +17,6 @@ export default defineConfig({
     port: 5173,
     open: true,
     proxy: {
-      // In local dev, proxy /api calls to Vercel dev server on port 3000
-      // Run: npx vercel dev (port 3000) alongside npm run dev (port 5173)
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
