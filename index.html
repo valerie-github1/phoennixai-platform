@@ -1591,7 +1591,8 @@ var Login = function Login(_ref3) {
       fontSize: 12.5,
       color: '#6B7477',
       textAlign: 'center',
-      marginTop: '.875rem'
+      marginTop: '1.5rem',
+      lineHeight: 1.5
     }
   }, "No account? ", /*#__PURE__*/React.createElement("span", {
     style: {
@@ -5077,7 +5078,7 @@ var Customize = function Customize() {
             _context5.p = 5;
             _t3 = _context5.v;
             setApiStatus('fail');
-            setApiMsg('Connection failed: ' + _t3.message + '. Check CORS — run via http-server or Vercel.');
+            setApiMsg('Connection failed: ' + _t3.message + '. Ensure your gateway has CORS enabled for this domain.');
           case 6:
             return _context5.a(2);
         }
@@ -5402,8 +5403,10 @@ var Customize = function Customize() {
     style: {
       flex: 1,
       overflowY: 'auto',
-      padding: '1.75rem',
-      maxWidth: 680
+      padding: '1.75rem 2.5rem',
+      maxWidth: 860,
+      margin: '0 auto',
+      width: '100%'
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
