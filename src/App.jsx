@@ -1313,7 +1313,7 @@ var Sidebar = function Sidebar(_ref6) {
     user = _ref6.user,
     sidebarOpen = _ref6.sidebarOpen,
     setSidebarOpen = _ref6.setSidebarOpen;
-  var nav = [['home', '⊕', 'New chat'], ['search', '◎', 'Search'], ['agents', '◉', 'Agents'], ['chat', '◎', 'Agent Chat'], ['routines', '⚡', 'Routines'], ['code', '⧉', 'Code'], ['design', '◈', 'Design'], ['client', '▣', 'Client Data'], ['projects', '◫', 'Projects'], ['desktop', '⊙', 'Desktop App'], ['customize', '⊛', 'Customize'], ['manual', '?', 'User Manual']];
+  var nav = [['home', '⊕', 'New chat'], ['search', '◎', 'Search'], ['agents', '◉', 'Agents'], ['chat', '◎', 'Agent Chat'], ['routines', '⚡', 'Cadence'], ['code', '⧉', 'Code'], ['design', '◈', 'Design'], ['client', '▣', 'Client Data'], ['projects', '◫', 'Projects'], ['desktop', '⊙', 'Desktop App'], ['customize', '⊛', 'Customize'], ['manual', '?', 'User Manual']];
   return /*#__PURE__*/React.createElement("div", {
     id: "sidebar",
     style: {
@@ -1622,7 +1622,7 @@ var Home = function Home(_ref9) {
     v: 'agents'
   }, {
     n: '8',
-    l: 'Routines',
+    l: 'Cadence',
     c: '#ABA944',
     v: 'routines'
   }, {
@@ -3246,7 +3246,7 @@ var Routines = function Routines() {
       fontSize: 13,
       fontWeight: 600
     }
-  }, "\u26A1 Routines"), /*#__PURE__*/React.createElement("button", {
+  }, "⚡ Cadence"), /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return setNR(true);
     },
@@ -5470,7 +5470,7 @@ var Customize = function Customize() {
       textTransform: 'uppercase',
       color: 'var(--t3)'
     }
-  }, /*#__PURE__*/React.createElement("div", null, "Routine"), /*#__PURE__*/React.createElement("div", null, "Agent"), /*#__PURE__*/React.createElement("div", null, "Schedule"), /*#__PURE__*/React.createElement("div", null, "Status"), /*#__PURE__*/React.createElement("div", null, "Actions")), cronJobs.map(function (job) {
+  }, /*#__PURE__*/React.createElement("div", null, "Cadence"), /*#__PURE__*/React.createElement("div", null, "Agent"), /*#__PURE__*/React.createElement("div", null, "Schedule"), /*#__PURE__*/React.createElement("div", null, "Status"), /*#__PURE__*/React.createElement("div", null, "Actions")), cronJobs.map(function (job) {
     return /*#__PURE__*/React.createElement("div", {
       key: job.id,
       style: {
@@ -6431,7 +6431,7 @@ var SearchView = function SearchView(_ref36) {
       gap: .5,
       padding: '.5rem'
     }
-  }, [['Agents', '◉', 'agents'], ['Routines', '⚡', 'routines'], ['Design', '◈', 'design'], ['Client Data', '▣', 'client'], ['Code', '⧉', 'code'], ['Manual', '?', 'manual']].map(function (_ref37) {
+  }, [['Agents', '◉', 'agents'], ['Cadence', '⚡', 'routines'], ['Design', '◈', 'design'], ['Client Data', '▣', 'client'], ['Code', '⧉', 'code'], ['Manual', '?', 'manual']].map(function (_ref37) {
     var _ref38 = _slicedToArray(_ref37, 3),
       lbl = _ref38[0],
       ic = _ref38[1],
