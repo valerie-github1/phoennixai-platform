@@ -12,7 +12,7 @@ window.__phoennixConfig = (function(){
   return Object.assign({
     endpoint:      'https://phoennixai-api.vercel.app/api/claude',
     routineSecret: 'phoennix-cadence-2026-vw',
-    model:         'claude-sonnet-4-20250514',
+    model:         'claude-sonnet-4-6',
     supabaseUrl:   '',
     supabaseKey:   ''
   }, saved);
@@ -2749,7 +2749,7 @@ var AgentChat = function AgentChat(_ref10) {
             _context3.p = 2;
             ep = (_window$__phoennixCon = window.__phoennixConfig) === null || _window$__phoennixCon === void 0 ? void 0 : _window$__phoennixCon.endpoint;
             apiKey = (_window$__phoennixCon2 = window.__phoennixConfig) === null || _window$__phoennixCon2 === void 0 ? void 0 : _window$__phoennixCon2.anthropic;
-            sys = 'You are ' + ag.n + ', PhoennixAI ' + ag.r + '. DNA: ' + ag.dna + '\n\nContext: PhoennixAI (double-N always). Founder: Valerie Wilcox. 31 agents, 5 tiers. Brand: slate #556970, olive #ABA944.\nWhen given an image: read ALL text visible, identify ALL UI elements, diagnose ALL bugs precisely, give exact code fix.\nAlways end with one clear next action. Plain text only.';
+            sys = 'You are ' + ag.n + ', PhoennixAI ' + ag.r + '. DNA: ' + ag.dna + '\n\nContext: PhoennixAI (double-N always). Founder: Valerie Wilcox. 31 agents, 5 tiers. Brand: slate #556970, olive #ABA944.\nWhen given an image: read ALL text visible, identify ALL UI elements, diagnose ALL bugs precisely, give exact code fix.\nAlways end with one clear next action.\n\nFORMATTING RULES — follow exactly:\n- Never use # or ## markdown headings. Use bold (**text**) for section labels instead.\n- Use short bullet points (- item) for lists.\n- Keep prose concise — 2-3 sentences max per paragraph.\n- No pipe tables unless explicitly asked.\n- Responses should feel like clean assistant chat, not a document.';
             apiHistory = h.filter(function (m) {
               return m.type !== 'typing';
             }).map(function (m) {
@@ -2823,7 +2823,7 @@ var AgentChat = function AgentChat(_ref10) {
                 'anthropic-version': '2023-06-01'
               },
               body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514',
+                model: 'claude-sonnet-4-6',
                 max_tokens: 2000,
                 system: sys,
                 messages: apiHistory
@@ -3146,10 +3146,32 @@ var AgentChat = function AgentChat(_ref10) {
           border: '0.5px solid rgba(85,105,112,.25)'
         }
       });
-    })), m.text && m.text.split('\n').map(function (ln, j) {
-      return /*#__PURE__*/React.createElement("div", {
-        key: j
-      }, ln || /*#__PURE__*/React.createElement("br", null));
+    })), m.text && /*#__PURE__*/React.createElement("div", {
+      dangerouslySetInnerHTML: {
+        __html: (function(t) {
+          return t
+            // code blocks first
+            .replace(/```[\w]*\n?([\s\S]*?)```/g, '<pre style="background:rgba(85,105,112,.08);border:0.5px solid rgba(85,105,112,.2);border-radius:6px;padding:.6rem .8rem;font-family:Fira Code,monospace;font-size:12px;line-height:1.6;overflow-x:auto;margin:.4rem 0">$1</pre>')
+            // inline code
+            .replace(/`([^`]+)`/g, '<code style="background:rgba(85,105,112,.1);border-radius:3px;padding:.1rem .3rem;font-family:Fira Code,monospace;font-size:12px">$1</code>')
+            // bold
+            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+            // h1/h2/h3 — render as styled text, not heading tags
+            .replace(/^### (.+)$/gm, '<div style="font-weight:600;font-size:13px;color:var(--tx);margin:.6rem 0 .2rem">$1</div>')
+            .replace(/^## (.+)$/gm, '<div style="font-weight:700;font-size:13.5px;color:var(--tx);margin:.75rem 0 .25rem">$1</div>')
+            .replace(/^# (.+)$/gm, '<div style="font-weight:700;font-size:14px;color:var(--tx);margin:.75rem 0 .3rem">$1</div>')
+            // bullets
+            .replace(/^\s*[-*] (.+)$/gm, '<div style="display:flex;gap:.4rem;margin:.15rem 0"><span style="color:var(--accent);margin-top:.1rem">·</span><span>$1</span></div>')
+            // numbered lists
+            .replace(/^\s*(\d+)\. (.+)$/gm, '<div style="display:flex;gap:.4rem;margin:.15rem 0"><span style="color:var(--t2);font-variant-numeric:tabular-nums;min-width:1rem">$1.</span><span>$2</span></div>')
+            // horizontal rule
+            .replace(/^---$/gm, '<hr style="border:none;border-top:0.5px solid rgba(85,105,112,.2);margin:.5rem 0">')
+            // blank lines → spacing
+            .replace(/\n\n/g, '<div style="height:.5rem"></div>')
+            // remaining newlines
+            .replace(/\n/g, '<br>');
+        })(m.text)
+      }
     })), /*#__PURE__*/React.createElement("div", {
       className: "msg-acts",
       style: {
@@ -3348,7 +3370,7 @@ var AgentChat = function AgentChat(_ref10) {
       color: 'var(--t3)',
       lineHeight: '26px'
     }
-  }, "Model: ", ((_window$__phoennixCon3 = window.__phoennixConfig) === null || _window$__phoennixCon3 === void 0 ? void 0 : _window$__phoennixCon3.model) === 'claude-opus-4-20250514' ? 'Opus 4.6' : 'Sonnet 4.6', " \xB7 ", /*#__PURE__*/React.createElement("button", {
+  }, "Model: ", ((_window$__phoennixCon3 = window.__phoennixConfig) === null || _window$__phoennixCon3 === void 0 ? void 0 : _window$__phoennixCon3.model) === 'claude-opus-4-6' ? 'Opus 4.6' : 'Sonnet 4.6', " \xB7 ", /*#__PURE__*/React.createElement("button", {
     onClick: function onClick() {
       return toast('Change model in Customize → API Config');
     },
@@ -5002,7 +5024,7 @@ var Customize = function Customize() {
         routineSecret: ((_window$__phoennixCon0 = window.__phoennixConfig) === null || _window$__phoennixCon0 === void 0 ? void 0 : _window$__phoennixCon0.routineSecret) || '',
         supabaseUrl: ((_window$__phoennixCon1 = window.__phoennixConfig) === null || _window$__phoennixCon1 === void 0 ? void 0 : _window$__phoennixCon1.supabaseUrl) || '',
         supabaseKey: ((_window$__phoennixCon10 = window.__phoennixConfig) === null || _window$__phoennixCon10 === void 0 ? void 0 : _window$__phoennixCon10.supabaseKey) || '',
-        model: ((_window$__phoennixCon11 = window.__phoennixConfig) === null || _window$__phoennixCon11 === void 0 ? void 0 : _window$__phoennixCon11.model) || 'claude-sonnet-4-20250514'
+        model: ((_window$__phoennixCon11 = window.__phoennixConfig) === null || _window$__phoennixCon11 === void 0 ? void 0 : _window$__phoennixCon11.model) || 'claude-sonnet-4-6'
       };
     }),
     _useState56 = _slicedToArray(_useState55, 2),
@@ -5513,9 +5535,9 @@ var Customize = function Customize() {
       fontSize: 12
     }
   }, /*#__PURE__*/React.createElement("option", {
-    value: "claude-sonnet-4-20250514"
+    value: "claude-sonnet-4-6"
   }, "Claude Sonnet 4.6 \u2014 Default (fast, cost-efficient)"), /*#__PURE__*/React.createElement("option", {
-    value: "claude-opus-4-20250514"
+    value: "claude-opus-4-6"
   }, "Claude Opus 4.6 \u2014 ULTRAPLAN (deep reasoning, 30-min budget)"), /*#__PURE__*/React.createElement("option", {
     value: "claude-haiku-4-5-20251001"
   }, "Claude Haiku 4.5 \u2014 Fast tasks (lowest cost)"))), /*#__PURE__*/React.createElement("div", {
@@ -6971,7 +6993,7 @@ var CodeView = function CodeView() {
                 'anthropic-version': '2023-06-01'
               },
               body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514',
+                model: 'claude-sonnet-4-6',
                 max_tokens: 600,
                 system: 'You are NEXUS, PhoennixAI principal engineer. You are in a terminal session on the phoennix-ai GitHub repo. Respond concisely. Use plain text. End with one clear next action.',
                 messages: [{
@@ -8026,7 +8048,7 @@ var ComputerUsePanel = function ComputerUsePanel() {
   }, {
     n: 3,
     label: 'Computer Use Tool',
-    desc: 'claude-sonnet-4-20250514 with computer_use_20241022 beta. Sends mouse_move, left_click, key, type commands.',
+    desc: 'claude-sonnet-4-6 with computer_use_20241022 beta. Sends mouse_move, left_click, key, type commands.',
     status: 'api_ready'
   }, {
     n: 4,
